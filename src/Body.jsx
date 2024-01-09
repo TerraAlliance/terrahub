@@ -11,7 +11,7 @@ export default function Body() {
   return (
     <>
       <Lights />
-      <Navbar state={app.mainnav}>
+      <Navbar state={app.mainnav} names={["Wallet", "Learn", "Ecosystem", "Explore"]}>
         <Wallet />
         <Learn />
         <Ecosystem />

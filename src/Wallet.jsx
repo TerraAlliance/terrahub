@@ -6,7 +6,7 @@ import { app } from "./global"
 export default function Wallet() {
   return (
     <>
-      <Navbar state={app.walletnav}>
+      <Navbar state={app.walletnav} names={["Home", "Assets", "Swap", "Stake", "Burn", "Govern", "Theme"]}>
         <Home />
         <Assets />
         <Swap />

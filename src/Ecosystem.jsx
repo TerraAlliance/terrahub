@@ -7,7 +7,7 @@ import { app } from "./global"
 export default function Ecosystem() {
   return (
     <>
-      <Navbar state={app.ecosystemnav}>
+      <Navbar state={app.ecosystemnav} names={["Discords", "Wallets", "Finance", "Games"]}>
         <Discords />
         <Wallets />
         <Finance />

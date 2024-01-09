@@ -3,7 +3,7 @@ import { Html, RoundedBox } from "@react-three/drei"
 import { animated, useSpringValue } from "@react-spring/three"
 import { useWindowSize } from "@uidotdev/usehooks"
 
-export default function Navbar({ state, children }) {
+export default function Navbar({ state, children, names }) {
   const position = calculatePosition(state.origin.use(), state.translation.use(), useWindowSize())
   return (
     <>
@@ -11,7 +11,7 @@ export default function Navbar({ state, children }) {
         <Bar state={state} pages={children} />
         <Selected state={state} pages={children} />
         {children.map((page, index) => (
-          <Button key={index} state={state} pages={children} page={page} index={index} />
+          <Button key={index} state={state} pages={children} page={page} index={index} names={names} />
         ))}
       </group>
       <Pages state={state} children={children} />
@@ -96,12 +96,14 @@ function Selected({ state, pages }) {
   )
 }
 
-function Button({ state, pages, page, index }) {
+function Button({ state, pages, page, index, names }) {
   const width = state.width.use()
   const radius = state.radius.use()
   const height = radius * 3 * pages.length
   const direction = state.direction.use()
   const [hovered, setHover] = useState(false)
+
+  console.log(page.name)
 
   return (
     <>
@@ -122,7 +124,7 @@ function Button({ state, pages, page, index }) {
             <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={"hsl(44, 100%, 20%)"} />
           </mesh>
           <Html transform style={{ userSelect: "none" }} pointerEvents="none" position-z={radius * 2}>
-            <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white" }}>{page.type.name}</p>
+            <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white" }}>{names[index]}</p>
           </Html>
         </group>
       ) : (
@@ -142,7 +144,7 @@ function Button({ state, pages, page, index }) {
             <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={"hsl(44, 100%, 20%)"} />
           </mesh>
           <Html transform style={{ userSelect: "none" }} pointerEvents="none" position-z={radius * 2}>
-            <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white" }}>{page.type.name}</p>
+            <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white" }}>{names[index]}</p>
           </Html>
         </group>
       )}

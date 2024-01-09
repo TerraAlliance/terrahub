@@ -9,7 +9,7 @@ import { app } from "./global"
 export default function Learn() {
   return (
     <>
-      <Navbar state={app.learnnav}>
+      <Navbar state={app.learnnav} names={["Stablecoins", "Market Module", "Validators", "Staking", "Rewards", "Governance"]}>
         <Stablecoins />
         <MarketModule />
         <Validators />
