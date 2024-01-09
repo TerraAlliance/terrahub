@@ -48,7 +48,7 @@ function Logo({ scale }) {
 
       <mesh>
         <sphereGeometry args={[1, 32, 32]} />
-        <meshStandardMaterial transparent={true} roughness={0.4} metalness={1} opacity={0.5} color={"yellow"} />
+        <meshStandardMaterial transparent={true} roughness={0.4} metalness={1} opacity={0.5} color={0xfcba03} />
       </mesh>
     </group>
   )

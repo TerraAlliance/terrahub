@@ -25,7 +25,7 @@ export default function Body() {
 function Lights() {
   return (
     <>
-      <pointLight color={"white"} intensity={20} position={[0, 3000, -10000]} distance={0} decay={0} />
+      <pointLight color={"white"} intensity={5} position={[0, 3000, -10000]} distance={0} decay={0} />
       <pointLight color={"white"} intensity={20} position={[0, 0, 1000]} distance={0} decay={0} />
     </>
   )
