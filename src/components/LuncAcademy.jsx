@@ -42,8 +42,8 @@ function Logo({ scale }) {
           args={[arcShape, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]}
           material={material}
         />
-        <Extrude position={[-0.5, 0, -0.05]} args={[circle, { amount: 2, curveSegments: 48, steps: 2, depth: 0.1, bevelEnabled: false }]} material={material} />
-        <Extrude position={[0.5, 0, -0.05]} args={[circle, { amount: 2, curveSegments: 48, steps: 2, depth: 0.1, bevelEnabled: false }]} material={material} />
+        <Extrude position={[-0.49, 0, -0.05]} args={[circle, { amount: 2, curveSegments: 48, steps: 2, depth: 0.1, bevelEnabled: false }]} material={material} />
+        <Extrude position={[0.49, 0, -0.05]} args={[circle, { amount: 2, curveSegments: 48, steps: 2, depth: 0.1, bevelEnabled: false }]} material={material} />
       </group>
 
       <mesh>

@@ -11,7 +11,7 @@ export default function Navbar({ state, children, names }) {
         <Bar state={state} pages={children} />
         <Selected state={state} pages={children} />
         {children.map((page, index) => (
-          <Button key={index} state={state} pages={children} page={page} index={index} names={names} />
+          <Button key={index} state={state} pages={children} index={index} names={names} />
         ))}
       </group>
       <Pages state={state} children={children} />
@@ -22,25 +22,24 @@ export default function Navbar({ state, children, names }) {
 function Pages({ state, children }) {
   const size = useWindowSize()
   const selected = state.selected.use()
-  const previous = state.previous.use()
+  // const previous = state.previous.use()
   const direction = state.direction.use()
 
   const spring = useSpringValue(selected * (direction === "horizontal" ? size.width : size.height), {
     config: { mass: 1.7, friction: 30, tension: 200, clamp: false },
-    onStart: () => setAnimation(true),
-    onRest: () => setAnimation(false),
+    // onStart: () => setAnimation(true),
+    // onRest: () => setAnimation(false),
   })
   spring.start(selected * (direction === "horizontal" ? size.width : size.height))
-  const [animation, setAnimation] = useState(false)
+  // const [animation, setAnimation] = useState(false)
 
   return (
     <>
       {children.map((page, index) => (
-        <>
-          <animated.group key={index} position={spring.to((value) => (direction === "horizontal" ? [index * size.width - value, 0, 0] : [0, index * -size.height + value, 0]))}>
-            {selected === index || (previous === index && animation) || direction === "horizontal" ? page : null}
-          </animated.group>
-        </>
+        <animated.group key={index} position={spring.to((value) => (direction === "horizontal" ? [index * size.width - value, 0, 0] : [0, index * -size.height + value, 0]))}>
+          {/* {selected === index || (previous === index && animation) || direction === "horizontal" ? page : null} */}
+          {page}
+        </animated.group>
       ))}
     </>
   )
@@ -59,7 +58,7 @@ function Bar({ state, pages }) {
           <meshStandardMaterial color={"black"} metalness={0.8} />
         </mesh>
       ) : (
-        <RoundedBox args={[width, radius * 3 * pages.length - radius, 1]} radius={20}>
+        <RoundedBox args={[width, radius * 3 * pages.length - radius, 40]} bevelSegments={2} radius={20}>
           <meshStandardMaterial color={"black"} metalness={0.8} />
         </RoundedBox>
       )}
@@ -96,19 +95,17 @@ function Selected({ state, pages }) {
   )
 }
 
-function Button({ state, pages, page, index, names }) {
+function Button({ state, pages, index, names }) {
   const width = state.width.use()
   const radius = state.radius.use()
   const height = radius * 3 * pages.length
   const direction = state.direction.use()
   const [hovered, setHover] = useState(false)
 
-  console.log(page.name)
-
   return (
     <>
       {direction === "horizontal" ? (
-        <group position-x={(width / pages.length) * index - width / 2 + width / pages.length / 2} position-z={radius * 2}>
+        <group position-x={(width / pages.length) * index - width / 2 + width / pages.length / 2} position-z={radius}>
           <mesh
             onPointerOver={() => setHover(true)}
             onPointerOut={() => setHover(false)}
@@ -119,16 +116,17 @@ function Button({ state, pages, page, index, names }) {
               })
             }
             rotation-z={90 * (Math.PI / 180)}
+            position-z={radius}
           >
             <capsuleGeometry args={[radius, width / pages.length - radius * 2]} />
             <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={"hsl(44, 100%, 20%)"} />
           </mesh>
           <Html transform style={{ userSelect: "none" }} pointerEvents="none" position-z={radius * 2}>
-            <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white" }}>{names[index]}</p>
+            <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white", whiteSpace: "nowrap" }}>{names[index]}</p>
           </Html>
         </group>
       ) : (
-        <group position-y={-(height / pages.length) * index + height / 2 - height / pages.length / 2} position-z={radius * 2}>
+        <group position-y={-(height / pages.length) * index + height / 2 - height / pages.length / 2} position-z={radius}>
           <mesh
             onPointerOver={() => setHover(true)}
             onPointerOut={() => setHover(false)}
@@ -139,12 +137,13 @@ function Button({ state, pages, page, index, names }) {
               })
             }
             rotation-z={90 * (Math.PI / 180)}
+            position-z={radius}
           >
             <capsuleGeometry args={[radius, width - radius * 2]} />
             <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={"hsl(44, 100%, 20%)"} />
           </mesh>
           <Html transform style={{ userSelect: "none" }} pointerEvents="none" position-z={radius * 2}>
-            <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white" }}>{names[index]}</p>
+            <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white", whiteSpace: "nowrap" }}>{names[index]}</p>
           </Html>
         </group>
       )}

@@ -1,5 +1,6 @@
 import { Canvas } from "@react-three/fiber"
-import { Hud, OrthographicCamera, Stats } from "@react-three/drei"
+import { OrthographicCamera, Stats } from "@react-three/drei"
+import { OrbitControls } from "@react-three/drei"
 
 import Body from "./Body"
 
@@ -13,12 +14,11 @@ export default function App() {
       }}
     >
       <Background />
-      <Canvas >
-        <Hud>
-          <OrthographicCamera makeDefault position={[0, 0, 1000]} far={10000}  />
-          {process.env.NODE_ENV === "development" ? <Stats /> : null}
-          <Body />
-        </Hud>
+      <Canvas>
+        <OrbitControls enabled={false} />
+        <OrthographicCamera makeDefault position={[0, 0, 1000]} far={10000} />
+        {process.env.NODE_ENV === "development" ? <Stats /> : null}
+        <Body />
       </Canvas>
     </div>
   )
