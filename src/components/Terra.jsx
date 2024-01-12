@@ -9,12 +9,13 @@ import sound from "/sounds/sound_13.mp3"
 
 const sphere = new SphereGeometry(1, 32, 32)
 const flags = ["us", "tw", "th", "sg", "se", "imf", "ph", "sj", "my", "mn", "kr", "jp", "in", "id", "hk", "sh", "eu", "dk", "cn", "ch", "ca", "au"]
+const currencies = ["usd", "twd", "thb", "sgd", "sek", "sdr", "php", "nok", "myr", "mnt", "krw", "jpy", "inr", "idr", "hkd", "gbp", "eur", "dkk", "cny", "chf", "cad", "aud"]
 
 export default function Terra({ position, scale, onClick, animate, flag, setFlag }) {
   const [hovered, setHover] = useState(false)
   const { nodes } = useGLTF("/terra.glb")
   const explode = useSpringValue(0, { config: { mass: 1, friction: 15, tension: 350, clamp: true } })
-  const material = new MeshStandardMaterial({ roughness:0.25, metalness: 1, color: 0x0063ff })
+  const material = new MeshStandardMaterial({ roughness: 0.25, metalness: 1, color: 0x0063ff })
 
   const [rotation, setRotation] = useState(0)
   const flagRotation = useSpringValue(0, { config: { mass: 1, friction: 15, tension: 150, clamp: false } })
@@ -53,12 +54,12 @@ export default function Terra({ position, scale, onClick, animate, flag, setFlag
         rotation={[0, 0, Math.PI / 2]}
       >
         <sphereGeometry args={[1, 32, 32]} />
-        <meshStandardMaterial transparent={true} opacity={0.3} color={hovered  ? "blue" : "darkblue"} />
+        <meshStandardMaterial transparent={true} opacity={0.3} color={hovered ? "blue" : "darkblue"} />
       </animated.mesh>
       {flag !== undefined && (
         <>
           <Suspense>
-            <Flag scale={scale} flag={flag} flagRotation={flagRotation} />
+            <Flag scale={scale} flag={currencies.indexOf(flag)} flagRotation={flagRotation} />
           </Suspense>
           {setFlag && (
             <>

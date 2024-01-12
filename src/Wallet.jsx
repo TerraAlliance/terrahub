@@ -51,9 +51,6 @@ function Assets() {
 
   return (
     <>
-      {/* <Text position={[0, 375, 0]} fontSize={2800}>
-        Assets
-      </Text> */}
       <RoundedBox args={[1300, 650, 40]} radius={20}>
         <meshPhysicalMaterial color={"black"} roughness={1} metalness={0.8} />
       </RoundedBox>
@@ -61,8 +58,6 @@ function Assets() {
     </>
   )
 }
-
-const currencies = ["usd", "twd", "thb", "sgd", "sek", "sdr", "php", "nok", "myr", "mnt", "krw", "jpy", "inr", "idr", "hkd", "gbp", "eur", "dkk", "cny", "chf", "cad", "aud"]
 
 function Coins() {
   const balances = app.balances.use()
@@ -90,9 +85,9 @@ function Coin({ Component, coin, index }) {
   return (
     <group position={[x, y, 50]}>
       <Suspense>
-        <Component position={[-50, 0, 0]} scale={25} flag={currencies.indexOf(coin.denom.slice(1)) > 0 ? currencies.indexOf(coin.denom.slice(1)) : null} />
+        <Component position={[-50, 0, 0]} scale={25} flag={coin.denom.slice(1)} />
         <_Text position={[0, 0, 0]} fontSize={20} font="./GothamLight.otf" anchorX={"left"}>
-          {Math.round((coin.amount / 1000000) * 100) / 100 + " " + coin.denom.slice(0, 7)}
+          {Math.round((coin.amount / 1000000) * 100) / 100 + " " + (coin.denom.slice(0, 3) === "ibc" ? coin.denom.slice(0, 7) : coin.denom.slice(1, 7))}
         </_Text>
       </Suspense>
     </group>
