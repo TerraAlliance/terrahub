@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { useState } from "react"
 import { Html, RoundedBox } from "@react-three/drei"
 import { animated, useSpringValue } from "@react-spring/three"
@@ -38,7 +39,7 @@ function Pages({ state, children }) {
       {children.map((page, index) => (
         <animated.group key={index} position={spring.to((value) => (direction === "horizontal" ? [index * size.width - value, 0, 0] : [0, index * -size.height + value, 0]))}>
           {/* {selected === index || (previous === index && animation) || direction === "horizontal" ? page : null} */}
-          {page}
+          <Suspense>{page}</Suspense>
         </animated.group>
       ))}
     </>

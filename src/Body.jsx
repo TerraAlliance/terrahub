@@ -1,3 +1,6 @@
+import { useWallet } from "@terra-money/wallet-kit"
+import { useWindowSize } from "@uidotdev/usehooks"
+
 import Text from "./components/Text"
 import Navbar from "./components/Navbar"
 import Button from "./components/Button"
@@ -5,14 +8,13 @@ import Wallet from "./Wallet"
 import Learn from "./Learn"
 import Ecosystem from "./Ecosystem"
 import { app } from "./global"
-import { useWallet } from "@terra-money/wallet-kit"
 
 export default function Body() {
   return (
     <>
       <Lights />
       <Connect />
-      <Button position={[790, -440, 200]} radius={20} width={200} text={"Settings"} />
+      <Settings />
       <Navbar state={app.mainnav} names={["Wallet", "Learn", "Ecosystem", "Explore"]}>
         <Wallet />
         <Learn />
@@ -23,13 +25,26 @@ export default function Body() {
   )
 }
 
-function Connect() {
-  const { status, connect, disconnect } = useWallet()
-  const connected = status === "CONNECTED"
+function Settings() {
+  const size = useWindowSize()
 
   return (
     <>
-      <Button position={[790, 440, 200]} radius={20} width={200} text={connected ? "Disconnect" : "Connect"} onClick={() => (connected ? disconnect() : connect())} />
+      <Button position={[size.width / 2 - 150, -size.height / 2 + 40, 200]} radius={20} width={200} text={"Settings"} />
+    </>
+  )
+}
+
+function Connect() {
+  const { status, connect, disconnect } = useWallet()
+  const connected = status === "CONNECTED"
+  const onClick = () => (connected ? disconnect() : connect())
+  const text = connected ? "Disconnect" : "Connect"
+  const size = useWindowSize()
+
+  return (
+    <>
+      <Button position={[size.width / 2 - 150, size.height / 2 - 40, 200]} radius={20} width={200} text={text} onClick={onClick} />
     </>
   )
 }
@@ -38,9 +53,7 @@ function Lights() {
   return (
     <>
       <pointLight intensity={5} position={[0, 5000, -10000]} decay={0} />
-      {/* <directionalLight position={[0, 5, -10]} intensity={5} /> */}
       <directionalLight position={[0, -0.5, 1]} intensity={20} />
-      {/* <pointLight intensity={20} position={[0, 0, 1000]} decay={0} /> */}
     </>
   )
 }
