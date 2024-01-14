@@ -1,7 +1,8 @@
-import { useRef } from "react"
+import { useState, useRef } from "react"
+import { SphereGeometry, MeshStandardMaterial } from "three"
 import { useFrame } from "@react-three/fiber"
-import { useGLTF } from "@react-three/drei"
-import { Text } from "@react-three/drei"
+import { Text, useGLTF } from "@react-three/drei"
+import { useSpringValue, animated } from "@react-spring/three"
 
 // MoonRabbit
 
@@ -32,10 +33,6 @@ export function MoonRabbit({ position, scale }) {
 }
 
 // Orion
-
-import { useState } from "react"
-import { SphereGeometry, MeshStandardMaterial } from "three"
-import { useSpringValue, animated } from "@react-spring/three"
 
 const geometry = new SphereGeometry(1, 32, 32)
 const material = new MeshStandardMaterial({ roughness: 0.2, metalness: 1, color: 0x08c176 })
