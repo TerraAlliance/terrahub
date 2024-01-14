@@ -34,7 +34,9 @@ function Background() {
         height: "100%",
         backgroundColor: "black",
         zIndex: -1,
+        backgroundImage: "linear-gradient(180deg, rgba(0,0,0,1) 60%, rgba(141,104,2,0.7) 100%",
       }}
     ></div>
   )
 }
+
