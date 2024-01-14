@@ -14,6 +14,7 @@ export default function App() {
       }}
     >
       <Background />
+
       <Canvas>
         <OrbitControls enabled={false} />
         <OrthographicCamera makeDefault position={[0, 0, 1000]} far={10000} />

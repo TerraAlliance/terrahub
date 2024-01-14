@@ -23,7 +23,17 @@ export default function Terra({ position, scale, onClick, animate, flag, setFlag
   const [play] = useSound(sound, { volume: 1 })
 
   const group = useRef()
-  useFrame((state, delta) => (group.current.rotation.y += delta * 0.5))
+  useFrame((state, delta) => {
+    if (!hovered) group.current.rotation.y += delta * 0.5
+  })
+
+  const handleClick = () => {
+    animate &&
+      explode
+        .start(scale * 2.5)
+        .then(() => explode.start(0))
+        .then(() => onClick && onClick())
+  }
 
   return (
     <group position={position}>
@@ -44,13 +54,7 @@ export default function Terra({ position, scale, onClick, animate, flag, setFlag
           setHover(false)
           animate && explode.start(0)
         }}
-        onClick={() => {
-          animate &&
-            explode
-              .start(scale * 2.5)
-              .then(() => explode.start(0))
-              .then(() => onClick && onClick())
-        }}
+        onClick={handleClick}
         rotation={[0, 0, Math.PI / 2]}
       >
         <sphereGeometry args={[1, 32, 32]} />

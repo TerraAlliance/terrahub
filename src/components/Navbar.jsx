@@ -38,7 +38,7 @@ function Pages({ state, children }) {
     <>
       {children.map((page, index) => (
         <animated.group key={index} position={spring.to((value) => (direction === "horizontal" ? [index * size.width - value, 0, 0] : [0, index * -size.height + value, 0]))}>
-          {/* {selected === index || (previous === index && animation) || direction === "horizontal" ? page : null} */}
+          {/* {selected === index || (previous === index && animation) || direction === "horizontal" ? <Suspense>{page}</Suspense> : null} */}
           <Suspense>{page}</Suspense>
         </animated.group>
       ))}

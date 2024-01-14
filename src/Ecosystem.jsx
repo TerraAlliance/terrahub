@@ -1,9 +1,6 @@
 import Navbar from "./components/Navbar"
 import Text from "./components/Text"
-import Terrarium from "./components/Terrarium"
-import LuncAcademy from "./components/LuncAcademy"
-import MoonRabbit from "./components/MoonRabbit"
-import Orion from "./components/Orion"
+import { MoonRabbit, Orion, LuncAcademy, Terrarium } from "./components/Validators"
 import { app } from "./global"
 
 export default function Ecosystem() {
@@ -23,7 +20,7 @@ export default function Ecosystem() {
 function Discords() {
   return (
     <>
-      <Text position={[0, 350, 0]} fontSize={2800}>
+      <Text position={[0, 350, 0]} fontSize={2800} color='white'>
         Discords
       </Text>
       <Terrarium position={[150, 0, 0]} scale={120} />
@@ -38,8 +35,9 @@ function Validators() {
       <Text position={[0, 350, 0]} fontSize={2800}>
         Validators
       </Text>
-      <MoonRabbit position={[-150, 0, 0]} scale={120} />
-      <Orion position={[150, 0, 0]} scale={120} />
+      <MoonRabbit position={[-300, 0, 0]} scale={120} />
+      <Orion position={[0, 0, 0]} scale={120} />
+      <Terrarium position={[300, 0, 0]} scale={120} />
     </>
   )
 }

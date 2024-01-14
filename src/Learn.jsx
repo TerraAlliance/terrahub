@@ -1,9 +1,9 @@
 import Navbar from "./components/Navbar"
 import SwapMachine from "./components/SwapMachine"
 import Text from "./components/Text"
-import Dai from "./components/Dai"
-import Usdc from "./components/Usdc"
-import Usdt from "./components/Usdt"
+import { Dai, Usdt, Usdc } from "./components/Coins"
+import Slider from "./components/Slider"
+
 import { app } from "./global"
 
 export default function Learn() {
@@ -41,6 +41,8 @@ function MarketModule() {
         Market Module
       </Text>
       <SwapMachine />
+      <Slider position={[200, -175, 0]} scale={[200, 10, 5]} handleChange={null} text min={0} max={100} step={1} fontSize={30} />
+      <Slider position={[-200, -175, 0]} scale={[200, 10, 5]} handleChange={null} text min={0} max={100} step={1} fontSize={30} />
     </>
   )
 }

@@ -12,6 +12,7 @@
   "dependencies": {
     "@legendapp/state": "^2.1.4",
     "@react-spring/three": "^9.7.3",
+    "@react-three/csg": "^3.1.0",
     "@react-three/drei": "^9.92.5",
     "@react-three/fiber": "^8.15.12",
     "@terra-money/terra.proto": "4.0.4",
