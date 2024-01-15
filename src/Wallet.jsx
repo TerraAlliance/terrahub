@@ -1,6 +1,6 @@
 import { Suspense, useEffect } from "react"
-import { useWindowSize } from "@uidotdev/usehooks"
 import { Text, RoundedBox } from "@react-three/drei"
+import { useWindowSize } from "@uidotdev/usehooks"
 import { useLcdClient, useConnectedWallet } from "@terra-money/wallet-kit"
 
 import Navbar from "./components/Navbar"

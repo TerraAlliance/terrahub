@@ -30,7 +30,7 @@ function Settings() {
 
   return (
     <>
-      <Button position={[size.width / 2 - 150, -size.height / 2 + 40, 200]} radius={20} width={200} text={"Settings"} />
+      <Button position={[size.width / 2 - 150, -size.height / 2 + 40, 200]} radius={20} width={200} text={"Settings"} color={getColor(app.mainnav.selected.use())} />
     </>
   )
 }
@@ -44,9 +44,22 @@ function Connect() {
 
   return (
     <>
-      <Button position={[size.width / 2 - 150, size.height / 2 - 40, 200]} radius={20} width={200} text={text} onClick={onClick} />
+      <Button position={[size.width / 2 - 150, size.height / 2 - 40, 200]} radius={20} width={200} text={text} onClick={onClick} color={getColor(app.mainnav.selected.use())} />
     </>
   )
+}
+
+const getColor = (selected) => {
+  switch (selected) {
+    case 0:
+      return "hsl(45, 100%, 20%)"
+    case 1:
+      return "hsl(180, 100%, 20%)"
+    case 2:
+      return "hsl(300, 100%, 20%)"
+    case 3:
+      return "hsl(200, 100%, 20%)"
+  }
 }
 
 function Lights() {

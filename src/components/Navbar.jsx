@@ -23,22 +23,17 @@ export default function Navbar({ state, children, names }) {
 function Pages({ state, children }) {
   const size = useWindowSize()
   const selected = state.selected.use()
-  // const previous = state.previous.use()
   const direction = state.direction.use()
 
   const spring = useSpringValue(selected * (direction === "horizontal" ? size.width : size.height), {
     config: { mass: 1.7, friction: 30, tension: 200, clamp: false },
-    // onStart: () => setAnimation(true),
-    // onRest: () => setAnimation(false),
   })
   spring.start(selected * (direction === "horizontal" ? size.width : size.height))
-  // const [animation, setAnimation] = useState(false)
 
   return (
     <>
       {children.map((page, index) => (
         <animated.group key={index} position={spring.to((value) => (direction === "horizontal" ? [index * size.width - value, 0, 0] : [0, index * -size.height + value, 0]))}>
-          {/* {selected === index || (previous === index && animation) || direction === "horizontal" ? <Suspense>{page}</Suspense> : null} */}
           <Suspense>{page}</Suspense>
         </animated.group>
       ))}
@@ -76,12 +71,27 @@ function Selected({ state, pages }) {
   const spring = useSpringValue(0, { config: { mass: 1.7, friction: 20, tension: 200, clamp: false } })
   spring.start(selected)
 
+  const getColor = (selected) => {
+    switch (selected) {
+      case 0:
+        return "hsl(45, 100%, 20%)"
+      case 1:
+        return "hsl(180, 100%, 20%)"
+      case 2:
+        return "hsl(300, 100%, 20%)"
+      case 3:
+        return "hsl(200, 100%, 20%)"
+    }
+  }
+
+  console.log(state)
+
   return (
     <>
       {direction === "horizontal" ? (
         <animated.mesh position={spring.to((value) => [(width / pages.length) * value - width / 2 + width / pages.length / 2, 0, radius * 2])} rotation-z={90 * (Math.PI / 180)}>
           <capsuleGeometry args={[radius, width / pages.length - radius * 2]} />
-          <meshStandardMaterial metalness={1} roughness={1} color={"hsl(44, 100%, 20%)"} />
+          <meshStandardMaterial metalness={1} roughness={1} color={getColor(selected)} />
         </animated.mesh>
       ) : (
         <animated.mesh
@@ -89,7 +99,7 @@ function Selected({ state, pages }) {
           rotation-z={90 * (Math.PI / 180)}
         >
           <capsuleGeometry args={[radius, width - radius * 2]} />
-          <meshStandardMaterial metalness={1} roughness={1} color={"hsl(44, 100%, 20%)"} />
+          <meshStandardMaterial metalness={1} roughness={1} color={state.color.use()} />
         </animated.mesh>
       )}
     </>
@@ -103,6 +113,19 @@ function Button({ state, pages, index, names }) {
   const direction = state.direction.use()
   const [hovered, setHover] = useState(false)
 
+  const getColor = (index) => {
+    switch (index) {
+      case 0:
+        return "hsl(45, 100%, 20%)"
+      case 1:
+        return "hsl(180, 100%, 20%)"
+      case 2:
+        return "hsl(300, 100%, 20%)"
+      case 3:
+        return "hsl(200, 100%, 20%)"
+    }
+  }
+
   return (
     <>
       {direction === "horizontal" ? (
@@ -110,17 +133,12 @@ function Button({ state, pages, index, names }) {
           <mesh
             onPointerOver={() => setHover(true)}
             onPointerOut={() => setHover(false)}
-            onClick={() =>
-              state.selected.set((prev) => {
-                state.previous.set(prev)
-                return index
-              })
-            }
+            onClick={() => state.selected.set(index)}
             rotation-z={90 * (Math.PI / 180)}
             position-z={radius}
           >
             <capsuleGeometry args={[radius, width / pages.length - radius * 2]} />
-            <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={"hsl(44, 100%, 20%)"} />
+            <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={getColor(index)} />
           </mesh>
           <Html transform style={{ userSelect: "none" }} pointerEvents="none" position-z={radius * 2}>
             <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white", whiteSpace: "nowrap" }}>{names[index]}</p>
