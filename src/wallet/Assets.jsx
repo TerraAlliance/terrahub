@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from "react"
-import { RoundedBox } from "@react-three/drei"
+import { RoundedBox, Text } from "@react-three/drei"
 import { useWindowSize } from "@uidotdev/usehooks"
 import { useLcdClient, useConnectedWallet } from "@terra-money/wallet-kit"
 import { CapsuleGeometry } from "three"
@@ -26,6 +26,9 @@ export default function Assets() {
 
   return (
     <>
+      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={60}>
+        Assets
+      </Text>
       <RoundedBox args={[1250, 600, 40]} radius={20}>
         <meshPhysicalMaterial color={"black"} roughness={1} metalness={0.8} />
       </RoundedBox>

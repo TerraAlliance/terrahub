@@ -11,7 +11,7 @@ import { app } from "../global"
 export default function Stake() {
   const connected = useConnectedWallet()
   const address = connected?.addresses[getChainID(connected.network)]
-  // const address = "terra1mpmn2y9qw4dn6z2q3a7hy4c3wjztmvu7wde790"
+  // const address = "terra1rtmnt8ayar03rpmktnm3eanhsvrahecgyh5cz8"
   const validators = app.validators.use()
   const lcd = useLcdClient()
 

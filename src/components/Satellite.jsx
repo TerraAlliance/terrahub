@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber"
 import { useSpringValue, animated } from "@react-spring/three"
 
 const halfsphere = new SphereGeometry(1, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2)
-const roundedbox = new RoundedBoxGeometry(14, 20, 2, 20, 1)
+const roundedbox = new RoundedBoxGeometry(14, 20, 2, 2, 1)
 const white = new MeshStandardMaterial({ roughness: 0.2, metalness: 1, side: 2 })
 const blue = new MeshStandardMaterial({ roughness: 0.2, metalness: 1, color: 0x5494f8 })
 

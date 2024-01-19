@@ -6,8 +6,8 @@ export default function Govern() {
       <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={60}>
         Govern
       </Text>
-      <RoundedBox args={[1300, 650, 40]} radius={20}>
-        <meshStandardMaterial color={"black"} metalness={0.8} roughness={1} />
+      <RoundedBox args={[1250, 600, 40]} radius={20}>
+        <meshPhysicalMaterial color={"black"} roughness={1} metalness={0.8} />
       </RoundedBox>
     </>
   )
