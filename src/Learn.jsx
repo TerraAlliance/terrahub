@@ -1,6 +1,7 @@
+import { Text } from "@react-three/drei"
+
 import Navbar from "./components/Navbar"
 import SwapMachine from "./components/SwapMachine"
-import Text from "./components/Text"
 import { Dai, Usdt, Usdc } from "./components/Coins"
 import Slider from "./components/Slider"
 
@@ -24,7 +25,7 @@ export default function Learn() {
 function Stablecoins() {
   return (
     <>
-      <Text position={[0, 350, 0]} fontSize={2800}>
+      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
         Stablecoins
       </Text>
       <Dai position={[0, 0, 0]} scale={120} />
@@ -37,7 +38,7 @@ function Stablecoins() {
 function MarketModule() {
   return (
     <>
-      <Text position={[0, 350, 0]} fontSize={2800}>
+      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
         Market Module
       </Text>
       <SwapMachine />
@@ -50,7 +51,7 @@ function MarketModule() {
 function Validators() {
   return (
     <>
-      <Text position={[0, 350, 0]} fontSize={2800}>
+      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
         Validators
       </Text>
     </>
@@ -60,7 +61,7 @@ function Validators() {
 function Staking() {
   return (
     <>
-      <Text position={[0, 350, 0]} fontSize={2800}>
+      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
         Staking
       </Text>
     </>
@@ -70,7 +71,7 @@ function Staking() {
 function Rewards() {
   return (
     <>
-      <Text position={[0, 350, 0]} fontSize={2800}>
+      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
         Rewards
       </Text>
     </>
@@ -80,7 +81,7 @@ function Rewards() {
 function Governance() {
   return (
     <>
-      <Text position={[0, 350, 0]} fontSize={2800}>
+      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
         Governance
       </Text>
     </>

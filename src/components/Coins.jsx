@@ -13,37 +13,37 @@ arcShape.bezierCurveTo(x, y - 0.1, x, -(y - 0.1), 0, -y)
 arcShape.bezierCurveTo(0, -y, 0, -(y - 0.1), 0, -(y - 0.1))
 arcShape.bezierCurveTo(x - 0.15, -(y - 0.2), x - 0.15, y - 0.2, 0, y - 0.1)
 
-const material = new MeshStandardMaterial({ roughness: 0.3, metalness: 1, color: "white" })
+const whitemetal = new MeshStandardMaterial({ roughness: 0.3, metalness: 1, color: "white" })
 
 export function Dai({ position, scale }) {
-  const d = useRef()
+  const letterD = useRef()
   useFrame((state, delta) => {
-    d.current.rotation.y += delta * 0.5
+    letterD.current.rotation.y += delta * 0.5
   })
-  const cylinder = useRef()
+  const cylinders = useRef()
   useFrame((state) => {
-    cylinder.current.position.y = Math.sin(state.clock.elapsedTime) * 0.3
+    cylinders.current.position.y = Math.sin(state.clock.elapsedTime) * 0.3
   })
 
   return (
     <group position={position} scale={scale}>
-      <group ref={d}>
-        <Extrude position={[0, 0, -0.05]} args={[arcShape, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={material} />
-        <mesh position={[-0.4, 0, 0]} material={material}>
+      <group ref={letterD}>
+        <Extrude position={[0, 0, -0.05]} args={[arcShape, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={whitemetal} />
+        <mesh position={[-0.4, 0, 0]} material={whitemetal}>
           <boxGeometry args={[0.1, 1.1, 0.1]} />
         </mesh>
-        <mesh position={[-0.2, 0.5, 0]} material={material}>
+        <mesh position={[-0.2, 0.5, 0]} material={whitemetal}>
           <boxGeometry args={[0.4, 0.1, 0.1]} />
         </mesh>
-        <mesh position={[-0.2, -0.5, 0]} material={material}>
+        <mesh position={[-0.2, -0.5, 0]} material={whitemetal}>
           <boxGeometry args={[0.4, 0.1, 0.1]} />
         </mesh>
       </group>
-      <group ref={cylinder}>
-        <mesh position={[0, 0.13, 0]} rotation={[0.1, 0, 0]} material={material}>
+      <group ref={cylinders}>
+        <mesh position={[0, 0.13, 0]} rotation={[0.1, 0, 0]} material={whitemetal}>
           <cylinderGeometry args={[0.6, 0.6, 0.1, 32, 1, false]} />
         </mesh>
-        <mesh position={[0, -0.13, 0]} rotation={[0.1, 0, 0]} material={material}>
+        <mesh position={[0, -0.13, 0]} rotation={[0.1, 0, 0]} material={whitemetal}>
           <cylinderGeometry args={[0.6, 0.6, 0.1, 32, 1, false]} />
         </mesh>
       </group>
@@ -56,8 +56,6 @@ export function Dai({ position, scale }) {
 }
 
 // Usdt
-
-const material1 = new MeshStandardMaterial({ roughness: 0.3, metalness: 1, color: "white" })
 
 export function Usdt({ position, scale }) {
   const t = useRef()
@@ -73,14 +71,14 @@ export function Usdt({ position, scale }) {
   return (
     <group position={position} scale={scale}>
       <group ref={t}>
-        <mesh material={material1}>
+        <mesh material={whitemetal}>
           <boxGeometry args={[0.25, 1, 0.25]} />
         </mesh>
-        <mesh position={[0, 0.4, 0]} material={material1}>
+        <mesh position={[0, 0.4, 0]} material={whitemetal}>
           <boxGeometry args={[0.9, 0.25, 0.25]} />
         </mesh>
       </group>
-      <mesh ref={cylinder} position={[0, 0, 0]} rotation={[0.1, 0, 0]} material={material1}>
+      <mesh ref={cylinder} position={[0, 0, 0]} rotation={[0.1, 0, 0]} material={whitemetal}>
         <cylinderGeometry args={[0.7, 0.7, 0.1, 32, 1, false]} />
       </mesh>
       <mesh>
@@ -111,8 +109,6 @@ arc.bezierCurveTo(1, 0.6, 1, -0.6, 0.2, -0.75)
 arc.bezierCurveTo(0.2, -0.75, 0.2, -0.65, 0.2, -0.65)
 arc.bezierCurveTo(0.85, -0.5, 0.85, 0.5, 0.2, 0.65)
 
-const material2 = new MeshStandardMaterial({ roughness: 0.3, metalness: 1, color: "white" })
-
 export function Usdc({ position, scale }) {
   const mesh1 = useRef()
   const mesh2 = useRef()
@@ -127,18 +123,18 @@ export function Usdc({ position, scale }) {
   return (
     <group position={position} scale={scale}>
       <group ref={mesh1}>
-        <mesh position={[0, 0.45, 0]} material={material2}>
+        <mesh position={[0, 0.45, 0]} material={whitemetal}>
           <boxGeometry args={[0.1, 0.15, 0.1]} />
         </mesh>
-        <mesh position={[0, -0.45, 0]} material={material2}>
+        <mesh position={[0, -0.45, 0]} material={whitemetal}>
           <boxGeometry args={[0.1, 0.15, 0.1]} />
         </mesh>
-        <Extrude position={[0, 0, -0.05]} args={[sShape, { curveSegments: 24, steps: 1, depth: 0.1, bevelEnabled: false }]} material={material2} />
+        <Extrude position={[0, 0, -0.05]} args={[sShape, { curveSegments: 24, steps: 1, depth: 0.1, bevelEnabled: false }]} material={whitemetal} />
       </group>
 
       <group ref={mesh2}>
-        <Extrude position={[0, 0, -0.05]} args={[arc, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={material2} />
-        <Extrude position={[0, 0, 0.05]} rotation={[0, Math.PI, 0]} args={[arc, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={material2} />
+        <Extrude position={[0, 0, -0.05]} args={[arc, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={whitemetal} />
+        <Extrude position={[0, 0, 0.05]} rotation={[0, Math.PI, 0]} args={[arc, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={whitemetal} />
       </group>
 
       <mesh>

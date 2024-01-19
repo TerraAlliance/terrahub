@@ -14,10 +14,9 @@ export default function App() {
       }}
     >
       <Background />
-
       <Canvas>
-        {/* <OrbitControls enabled={false} /> */}
-        <OrthographicCamera makeDefault position={[0, 0, 1000]} far={10000} />
+        {/* <OrbitControls enabled={true} /> */}
+        <OrthographicCamera makeDefault position={[0, 0, 5000]} far={10000} />
         {process.env.NODE_ENV === "development" ? <Stats /> : null}
         <Body />
       </Canvas>
@@ -27,21 +26,7 @@ export default function App() {
 
 function Background() {
   const selected = app.mainnav.selected.use()
-
-  const getGradientColor = () => {
-    switch (selected) {
-      case 0:
-        return "wallet"
-      case 1:
-        return "learn"
-      case 2:
-        return "ecosystem"
-      case 3:
-        return "explore"
-    }
-  }
-
-  const classname = getGradientColor()
+  const classname = ["wallet", "learn", "ecosystem", "explore"][selected]
 
   return (
     <div

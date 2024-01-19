@@ -1,13 +1,20 @@
 import { useWallet } from "@terra-money/wallet-kit"
 import { useWindowSize } from "@uidotdev/usehooks"
+import { RoundedBox, Text } from "@react-three/drei"
 
-import Text from "./components/Text"
 import Navbar from "./components/Navbar"
 import Button from "./components/Button"
-import Wallet from "./Wallet"
 import Learn from "./Learn"
 import Ecosystem from "./Ecosystem"
 import { app } from "./global"
+
+import Home from "./wallet/Home"
+import Assets from "./wallet/Assets"
+import Swap from "./wallet/Swap"
+import Stake from "./wallet/Stake"
+import Burn from "./wallet/Burn"
+import Govern from "./wallet/Govern"
+import Theme from "./wallet/Theme"
 
 export default function Body() {
   return (
@@ -16,7 +23,15 @@ export default function Body() {
       <Connect />
       <Settings />
       <Navbar state={app.mainnav} names={["Wallet", "Learn", "Ecosystem", "Explore"]}>
-        <Wallet />
+        <Navbar state={app.walletnav} names={["Home", "Assets", "Swap", "Stake", "Burn", "Govern", "Theme"]}>
+          <Home />
+          <Assets />
+          <Swap />
+          <Stake />
+          <Burn />
+          <Govern />
+          <Theme />
+        </Navbar>
         <Learn />
         <Ecosystem />
         <Explore />
@@ -27,39 +42,22 @@ export default function Body() {
 
 function Settings() {
   const size = useWindowSize()
+  const position = [size.width / 2 - 150, -size.height / 2 + 40, 200]
+  const color = ["hsl(45, 100%, 20%)", "hsl(180, 100%, 20%)", "hsl(300, 100%, 20%)", "hsl(200, 100%, 20%)"][app.mainnav.selected.use()]
 
-  return (
-    <>
-      <Button position={[size.width / 2 - 150, -size.height / 2 + 40, 200]} radius={20} width={200} text={"Settings"} color={getColor(app.mainnav.selected.use())} />
-    </>
-  )
+  return <Button position={position} width={200} radius={20} color={color} text={"Settings"} opacity={1} textProps={{ font: "./GothamLight.otf", fontSize: 22 }} />
 }
 
 function Connect() {
+  const size = useWindowSize()
+  const position = [size.width / 2 - 150, size.height / 2 - 40, 200]
   const { status, connect, disconnect } = useWallet()
   const connected = status === "CONNECTED"
-  const onClick = () => (connected ? disconnect() : connect())
   const text = connected ? "Disconnect" : "Connect"
-  const size = useWindowSize()
+  const onClick = () => (connected ? disconnect() : connect())
+  const color = ["hsl(45, 100%, 20%)", "hsl(180, 100%, 20%)", "hsl(300, 100%, 20%)", "hsl(200, 100%, 20%)"][app.mainnav.selected.use()]
 
-  return (
-    <>
-      <Button position={[size.width / 2 - 150, size.height / 2 - 40, 200]} radius={20} width={200} text={text} onClick={onClick} color={getColor(app.mainnav.selected.use())} />
-    </>
-  )
-}
-
-const getColor = (selected) => {
-  switch (selected) {
-    case 0:
-      return "hsl(45, 100%, 20%)"
-    case 1:
-      return "hsl(180, 100%, 20%)"
-    case 2:
-      return "hsl(300, 100%, 20%)"
-    case 3:
-      return "hsl(200, 100%, 20%)"
-  }
+  return <Button position={position} width={200} radius={20} color={color} text={text} onClick={onClick} opacity={1} textProps={{ font: "./GothamLight.otf", fontSize: 22 }} />
 }
 
 function Lights() {
@@ -74,9 +72,12 @@ function Lights() {
 function Explore() {
   return (
     <>
-      <Text position={[0, 350, 0]} fontSize={2800}>
+      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
         Explore
       </Text>
+      <RoundedBox position={[0, -25, 0]} args={[1300, 650, 40]} radius={20}>
+        <meshStandardMaterial color={"black"} metalness={0.8} roughness={1} />
+      </RoundedBox>
     </>
   )
 }

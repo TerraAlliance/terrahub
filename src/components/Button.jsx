@@ -1,17 +1,31 @@
-import { useState } from "react"
-import { Html } from "@react-three/drei"
+import { useState, Suspense } from "react"
+import { Text, useCursor } from "@react-three/drei"
+import { CapsuleGeometry } from "three"
 
-export default function Button({ position, radius, width, text, onClick, color }) {
+export default function Button({ position, width, radius, color, text, textProps, onClick, opacity, geometry }) {
   const [hovered, setHover] = useState(false)
+  useCursor(hovered)
+
   return (
-    <group position={position}>
-      <mesh onPointerOver={() => setHover(true)} onPointerOut={() => setHover(false)} onClick={onClick} rotation-z={90 * (Math.PI / 180)}>
-        <capsuleGeometry args={[radius, width - radius * 2]} />
-        <meshStandardMaterial transparent={true} opacity={hovered ? 1 : 0.5} metalness={1} roughness={1} color={color} />
-      </mesh>
-      <Html position={[0, 0, radius]} transform style={{ userSelect: "none" }} pointerEvents="none">
-        <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white", whiteSpace: "nowrap" }}> {text}</p>
-      </Html>
-    </group>
+    <Suspense>
+      <group position={position}>
+        <mesh
+          geometry={geometry || new CapsuleGeometry(radius, width - radius * 2)}
+          rotation-z={Math.PI / 2}
+          onPointerOver={() => setHover(true)}
+          onPointerOut={() => setHover(false)}
+          onClick={onClick}
+        >
+          <meshStandardMaterial transparent={true} opacity={hovered ? opacity / 2 : opacity} metalness={1} roughness={1} color={color} />
+        </mesh>
+        <Suspense>
+          {text && (
+            <Text position-z={radius} {...textProps}>
+              {text}
+            </Text>
+          )}
+        </Suspense>
+      </group>
+    </Suspense>
   )
 }

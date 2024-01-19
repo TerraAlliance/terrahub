@@ -9,7 +9,6 @@ import sound from "/sounds/sound_13.mp3"
 
 const sphere = new SphereGeometry(1, 32, 32)
 const flags = ["us", "tw", "th", "sg", "se", "imf", "ph", "sj", "my", "mn", "kr", "jp", "in", "id", "hk", "sh", "eu", "dk", "cn", "ch", "ca", "au"]
-const currencies = ["usd", "twd", "thb", "sgd", "sek", "sdr", "php", "nok", "myr", "mnt", "krw", "jpy", "inr", "idr", "hkd", "gbp", "eur", "dkk", "cny", "chf", "cad", "aud"]
 
 export default function Terra({ position, scale, onClick, animate, flag, setFlag }) {
   const [hovered, setHover] = useState(false)
@@ -63,7 +62,7 @@ export default function Terra({ position, scale, onClick, animate, flag, setFlag
       {flag !== undefined && (
         <>
           <Suspense>
-            <Flag scale={scale} flag={currencies.indexOf(flag)} flagRotation={flagRotation} />
+            <Flag scale={scale} flag={flag} flagRotation={flagRotation} />
           </Suspense>
           {setFlag && (
             <>

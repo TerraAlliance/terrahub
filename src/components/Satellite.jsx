@@ -50,7 +50,7 @@ export default function Satellite({ position, rotation, scale, startAnimation = 
           }}
         >
           <sphereGeometry args={[1, 32, 32]} />
-          <meshStandardMaterial color={"blue"} transparent={true} opacity={hovered ? 0 : 0} />
+          <meshStandardMaterial color={"black"} transparent={true} opacity={hovered ? 0 : 0.3} />
         </mesh>
       )}
     </>

@@ -1,6 +1,5 @@
-import { Suspense } from "react"
-import { useState } from "react"
-import { Html, RoundedBox } from "@react-three/drei"
+import { useState, Suspense } from "react"
+import { RoundedBox, Text } from "@react-three/drei"
 import { animated, useSpringValue } from "@react-spring/three"
 import { useWindowSize } from "@uidotdev/usehooks"
 
@@ -71,27 +70,14 @@ function Selected({ state, pages }) {
   const spring = useSpringValue(0, { config: { mass: 1.7, friction: 20, tension: 200, clamp: false } })
   spring.start(selected)
 
-  const getColor = (selected) => {
-    switch (selected) {
-      case 0:
-        return "hsl(45, 100%, 20%)"
-      case 1:
-        return "hsl(180, 100%, 20%)"
-      case 2:
-        return "hsl(300, 100%, 20%)"
-      case 3:
-        return "hsl(200, 100%, 20%)"
-    }
-  }
-
-  console.log(state)
+  const color = ["hsl(45, 100%, 20%)", "hsl(180, 100%, 20%)", "hsl(300, 100%, 20%)", "hsl(200, 100%, 20%)"][selected]
 
   return (
     <>
       {direction === "horizontal" ? (
         <animated.mesh position={spring.to((value) => [(width / pages.length) * value - width / 2 + width / pages.length / 2, 0, radius * 2])} rotation-z={90 * (Math.PI / 180)}>
           <capsuleGeometry args={[radius, width / pages.length - radius * 2]} />
-          <meshStandardMaterial metalness={1} roughness={1} color={getColor(selected)} />
+          <meshStandardMaterial metalness={1} roughness={1} color={color} />
         </animated.mesh>
       ) : (
         <animated.mesh
@@ -113,18 +99,7 @@ function Button({ state, pages, index, names }) {
   const direction = state.direction.use()
   const [hovered, setHover] = useState(false)
 
-  const getColor = (index) => {
-    switch (index) {
-      case 0:
-        return "hsl(45, 100%, 20%)"
-      case 1:
-        return "hsl(180, 100%, 20%)"
-      case 2:
-        return "hsl(300, 100%, 20%)"
-      case 3:
-        return "hsl(200, 100%, 20%)"
-    }
-  }
+  const color = ["hsl(45, 100%, 20%)", "hsl(180, 100%, 20%)", "hsl(300, 100%, 20%)", "hsl(200, 100%, 20%)"][index]
 
   return (
     <>
@@ -138,11 +113,13 @@ function Button({ state, pages, index, names }) {
             position-z={radius}
           >
             <capsuleGeometry args={[radius, width / pages.length - radius * 2]} />
-            <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={getColor(index)} />
+            <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={color} />
           </mesh>
-          <Html transform style={{ userSelect: "none" }} pointerEvents="none" position-z={radius * 2}>
-            <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white", whiteSpace: "nowrap" }}>{names[index]}</p>
-          </Html>
+          <Suspense>
+            <Text position-z={radius * 2} font={"./GothamLight.otf"} fontSize={22}>
+              {names[index]}
+            </Text>
+          </Suspense>
         </group>
       ) : (
         <group position-y={-(height / pages.length) * index + height / 2 - height / pages.length / 2} position-z={radius}>
@@ -161,9 +138,11 @@ function Button({ state, pages, index, names }) {
             <capsuleGeometry args={[radius, width - radius * 2]} />
             <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={"hsl(44, 100%, 20%)"} />
           </mesh>
-          <Html transform style={{ userSelect: "none" }} pointerEvents="none" position-z={radius * 2}>
-            <p style={{ fontFamily: "Gotham Light", fontSize: 800, color: "white", whiteSpace: "nowrap" }}>{names[index]}</p>
-          </Html>
+          <Suspense>
+            <Text position-z={radius * 2} font={"./GothamLight.otf"} fontSize={22}>
+              {names[index]}
+            </Text>
+          </Suspense>
         </group>
       )}
     </>
