@@ -19,7 +19,7 @@ export default function Terra({ position, scale, onClick, animate, flag, setFlag
   const [rotation, setRotation] = useState(0)
   const flagRotation = useSpringValue(0, { config: { mass: 1, friction: 15, tension: 150, clamp: false } })
 
-  const [play] = useSound(sound, { volume: 1 })
+  const [play] = useSound(sound, { volume: 0.5 })
 
   const group = useRef()
   useFrame((state, delta) => {
@@ -56,7 +56,6 @@ export default function Terra({ position, scale, onClick, animate, flag, setFlag
         onClick={handleClick}
         rotation={[0, 0, Math.PI / 2]}
       >
-        <sphereGeometry args={[1, 32, 32]} />
         <meshStandardMaterial transparent={true} opacity={0.3} color={hovered ? "blue" : "darkblue"} />
       </animated.mesh>
       {flag !== undefined && (

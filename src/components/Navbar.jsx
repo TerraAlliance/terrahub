@@ -96,56 +96,33 @@ function Button({ state, pages, index, names }) {
   const width = state.width.use()
   const radius = state.radius.use()
   const height = radius * 3 * pages.length
-  const direction = state.direction.use()
+  const horizontal = state.direction.use() === "horizontal"
   const [hovered, setHover] = useState(false)
 
-  const color = ["hsl(45, 100%, 20%)", "hsl(180, 100%, 20%)", "hsl(300, 100%, 20%)", "hsl(200, 100%, 20%)"][index]
+  const position = horizontal
+    ? [(width / pages.length) * index - width / 2 + width / pages.length / 2, 0, radius]
+    : [0, -(height / pages.length) * index + height / 2 - height / pages.length / 2, radius]
+  const args = horizontal ? [radius, width / pages.length - radius * 2] : [radius, width - radius * 2]
+  const color = horizontal ? ["hsl(45, 100%, 20%)", "hsl(180, 100%, 20%)", "hsl(300, 100%, 20%)", "hsl(200, 100%, 20%)"][index] : "hsl(44, 100%, 20%)"
 
   return (
-    <>
-      {direction === "horizontal" ? (
-        <group position-x={(width / pages.length) * index - width / 2 + width / pages.length / 2} position-z={radius}>
-          <mesh
-            onPointerOver={() => setHover(true)}
-            onPointerOut={() => setHover(false)}
-            onClick={() => state.selected.set(index)}
-            rotation-z={90 * (Math.PI / 180)}
-            position-z={radius}
-          >
-            <capsuleGeometry args={[radius, width / pages.length - radius * 2]} />
-            <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={color} />
-          </mesh>
-          <Suspense>
-            <Text position-z={radius * 2} font={"./GothamLight.otf"} fontSize={22}>
-              {names[index]}
-            </Text>
-          </Suspense>
-        </group>
-      ) : (
-        <group position-y={-(height / pages.length) * index + height / 2 - height / pages.length / 2} position-z={radius}>
-          <mesh
-            onPointerOver={() => setHover(true)}
-            onPointerOut={() => setHover(false)}
-            onClick={() =>
-              state.selected.set((prev) => {
-                state.previous.set(prev)
-                return index
-              })
-            }
-            rotation-z={90 * (Math.PI / 180)}
-            position-z={radius}
-          >
-            <capsuleGeometry args={[radius, width - radius * 2]} />
-            <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={"hsl(44, 100%, 20%)"} />
-          </mesh>
-          <Suspense>
-            <Text position-z={radius * 2} font={"./GothamLight.otf"} fontSize={22}>
-              {names[index]}
-            </Text>
-          </Suspense>
-        </group>
-      )}
-    </>
+    <group position={position}>
+      <mesh
+        onPointerOver={() => setHover(true)}
+        onPointerOut={() => setHover(false)}
+        onClick={() => state.selected.set(index)}
+        rotation-z={90 * (Math.PI / 180)}
+        position-z={radius}
+      >
+        <capsuleGeometry args={args} />
+        <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={color} />
+      </mesh>
+      <Suspense>
+        <Text position-z={radius * 2} font={"./GothamLight.otf"} fontSize={22}>
+          {names[index]}
+        </Text>
+      </Suspense>
+    </group>
   )
 }
 

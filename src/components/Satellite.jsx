@@ -4,6 +4,7 @@ import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeom
 import { useFrame } from "@react-three/fiber"
 import { useSpringValue, animated } from "@react-spring/three"
 
+const sphere = new SphereGeometry(1, 32, 32)
 const halfsphere = new SphereGeometry(1, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2)
 const roundedbox = new RoundedBoxGeometry(14, 20, 2, 2, 1)
 const white = new MeshStandardMaterial({ roughness: 0.2, metalness: 1, side: 2 })
@@ -33,6 +34,7 @@ export default function Satellite({ position, rotation, scale, startAnimation = 
       {onClick && (
         <mesh
           position={position}
+          geometry={sphere}
           scale={scale * 22.5}
           onPointerOver={() => {
             setHover(true)
@@ -49,7 +51,6 @@ export default function Satellite({ position, rotation, scale, startAnimation = 
               .then(() => onClick())
           }}
         >
-          <sphereGeometry args={[1, 32, 32]} />
           <meshStandardMaterial color={"black"} transparent={true} opacity={hovered ? 0 : 0.3} />
         </mesh>
       )}

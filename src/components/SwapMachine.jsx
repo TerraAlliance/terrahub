@@ -13,7 +13,7 @@ export default function SwapMachine() {
   const tornado = useSpringValue(0, { config: { mass: 1, friction: 15, tension: 50 } })
 
   // const [play_1] = useSound(sound_1)
-  const [play_2] = useSound(sound_2)
+  const [play_2] = useSound(sound_2, { volume: 0.5 })
 
   const [activeFlag, setActiveFlag] = useState(0)
 

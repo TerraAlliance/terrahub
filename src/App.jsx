@@ -16,7 +16,7 @@ export default function App() {
     >
       <Background />
       <Canvas>
-        {/* {process.env.NODE_ENV === "development" ? <Perf position={"bottom-left"}  /> : null} */}
+        {/* {process.env.NODE_ENV === "development" ? <Perf position={"bottom-left"} /> : null} */}
         {/* <OrbitControls enabled={true} /> */}
         <OrthographicCamera makeDefault position={[0, 0, 5000]} far={10000} />
         <Body />

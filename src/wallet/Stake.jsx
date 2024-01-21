@@ -6,7 +6,7 @@ import { useLcdClient, useConnectedWallet } from "@terra-money/wallet-kit"
 
 import Satellite from "../components/Satellite"
 import Button from "../components/Button"
-import { app } from "../global"
+import { app, getChainID } from "../global"
 
 export default function Stake() {
   const connected = useConnectedWallet()
@@ -98,17 +98,4 @@ function Validator({ validator, index }) {
       {<Satellite position={[-108, 0, 50]} scale={1.3} onClick={() => null} />}
     </group>
   )
-}
-
-const getChainID = (network) => {
-  switch (network) {
-    case "mainnet":
-      return "phoenix-1"
-    case "testnet":
-      return "pisco-1"
-    case "classic":
-      return "columbus-5"
-    case "localterra":
-      return "localterra"
-  }
 }

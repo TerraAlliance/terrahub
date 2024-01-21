@@ -7,7 +7,7 @@ import { CapsuleGeometry } from "three"
 import Terra from "../components/Terra"
 import { Lunc, Ibc } from "../components/Coins"
 import Button from "../components/Button"
-import { app } from "../global"
+import { app, getChainID } from "../global"
 
 export default function Assets() {
   const connected = useConnectedWallet()
@@ -15,8 +15,6 @@ export default function Assets() {
   // const address = "terra120ppepaj2lh5vreadx42wnjjznh55vvktwj679"
   const lcd = useLcdClient()
   const balances = app.balances.use()
-
-  console.log(connected)
 
   useEffect(() => {
     if (connected) {
@@ -68,17 +66,4 @@ function Coin({ Component, coin, index }) {
       />
     </group>
   )
-}
-
-const getChainID = (network) => {
-  switch (network) {
-    case "mainnet":
-      return "phoenix-1"
-    case "testnet":
-      return "pisco-1"
-    case "classic":
-      return "columbus-5"
-    case "localterra":
-      return "localterra"
-  }
 }

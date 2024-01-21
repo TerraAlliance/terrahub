@@ -14,7 +14,6 @@ import Swap from "./wallet/Swap"
 import Stake from "./wallet/Stake"
 import Burn from "./wallet/Burn"
 import Govern from "./wallet/Govern"
-import Theme from "./wallet/Theme"
 
 export default function Body() {
   return (
@@ -23,14 +22,13 @@ export default function Body() {
       <Connect />
       <Settings />
       <Navbar state={app.mainnav} names={["Wallet", "Learn", "Ecosystem", "Explore"]}>
-        <Navbar state={app.walletnav} names={["Home", "Assets", "Swap", "Stake", "Burn", "Govern", "Theme"]}>
+        <Navbar state={app.walletnav} names={["Home", "Assets", "Swap", "Stake", "Burn", "Govern"]}>
           <Home />
           <Assets />
           <Swap />
           <Stake />
           <Burn />
           <Govern />
-          <Theme />
         </Navbar>
         <Learn />
         <Ecosystem />
