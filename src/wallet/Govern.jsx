@@ -1,11 +1,11 @@
 import { useEffect } from "react"
-import { CapsuleGeometry } from "three"
-import { Text, RoundedBox } from "@react-three/drei"
 import { useLcdClient, useConnectedWallet } from "@terra-money/wallet-kit"
 
+import Text from "../components/Text"
 import { app, getChainID } from "../global"
 import Button from "../components/Button"
-import Terra from "../components/Terra"
+import { Terra } from "../components/Coins"
+import Grid from "../components/Grid"
 
 export default function Govern() {
   const connected = useConnectedWallet()
@@ -18,46 +18,19 @@ export default function Govern() {
     }
   }, [connected])
 
-  console.log(proposals)
-
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={60}>
-        Govern
-      </Text>
-      <RoundedBox args={[1250, 600, 40]} radius={20}>
-        <meshPhysicalMaterial color={"black"} roughness={1} metalness={0.8} />
-      </RoundedBox>
-      {proposals?.slice(0, 24).map((proposal, index) => (
-        <Proposal key={index} proposal={proposal} index={index} />
-      ))}
+      <Grid position={[0, 0, 0]} height={650} width={1250} xspacing={700} columns={1} speed={40} visibleItems={10}>
+        {({ width, index }) => {
+          return (
+            <>
+              <Button width={width - 50} radius={25} opacity={1} color={"hsl(0, 0%, 22%)"} hoveredColor={"hsl(315, 100%, 30%)"} />
+              <Terra position={[-575, 0, 50]} scale={25} />
+              <Text text={proposals?.[index]?.content.title} position={[-525, 0, 30]} anchorX={"left"} fontSize={22} clipRect={[0, -100, 1000, 100]} />
+            </>
+          )
+        }}
+      </Grid>
     </>
-  )
-}
-
-const geometry = new CapsuleGeometry(30, 1000)
-
-function Proposal({ proposal, index }) {
-  const xspacing = 310
-  const yspacing = 90
-  const columns = 6
-
-  const x = Math.floor(index / columns) * xspacing
-  const y = -(index % columns) * yspacing + ((columns - 1) * yspacing) / 2
-
-  return (
-    <group key={index} position={[x, y, 50]}>
-      <Terra position={[-500, 0, 50]} scale={30}  />
-      <Button
-        position={[0, 0, 0]}
-        width={200}
-        radius={30}
-        geometry={geometry}
-        opacity={1}
-        color={"hsl(45, 0%, 12%)"}
-        text={proposal.content.title}
-        textProps={{ font: "./GothamLightEmojis.woff", fontSize: 22, anchorX: "left", "position-x": -450, clipRect: [0, -100, 1000, 100] }}
-      />
-    </group>
   )
 }

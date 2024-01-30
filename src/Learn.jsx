@@ -1,4 +1,4 @@
-import { Text } from "@react-three/drei"
+import Text from "./components/Text"
 
 import Navbar from "./components/Navbar"
 import MarketPools from "./components/MarketPools"
@@ -25,9 +25,7 @@ export default function Learn() {
 function Stablecoins() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Stablecoins
-      </Text>
+      <Text text="Stablecoins" position={[0, 350, 0]} fontSize={70} />
       <Dai position={[0, 0, 0]} scale={120} />
       <Usdc position={[-300, 0, 0]} scale={120} />
       <Usdt position={[300, 0, 0]} scale={120} />
@@ -38,9 +36,7 @@ function Stablecoins() {
 function MarketModule() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Market Module
-      </Text>
+      <Text text="Market Module" position={[0, 350, 0]} fontSize={70} />
       <MarketPools />
       <Slider position={[200, -175, 0]} scale={[200, 10, 5]} handleChange={null} text min={0} max={100} step={1} fontSize={30} />
       <Slider position={[-200, -175, 0]} scale={[200, 10, 5]} handleChange={null} text min={0} max={100} step={1} fontSize={30} />
@@ -51,9 +47,7 @@ function MarketModule() {
 function Validators() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Validators
-      </Text>
+      <Text text="Validators" position={[0, 350, 0]} fontSize={70} />
     </>
   )
 }
@@ -61,9 +55,7 @@ function Validators() {
 function Staking() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Staking
-      </Text>
+      <Text text="Staking" position={[0, 350, 0]} fontSize={70} />
     </>
   )
 }
@@ -71,9 +63,7 @@ function Staking() {
 function Rewards() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Rewards
-      </Text>
+      <Text text="Rewards" position={[0, 350, 0]} fontSize={70} />
     </>
   )
 }
@@ -81,9 +71,7 @@ function Rewards() {
 function Governance() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Governance
-      </Text>
+      <Text text="Governance" position={[0, 350, 0]} fontSize={70} />
     </>
   )
 }

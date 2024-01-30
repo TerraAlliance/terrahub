@@ -1,4 +1,4 @@
-import { Text } from "@react-three/drei"
+import Text from "./components/Text"
 
 import Navbar from "./components/Navbar"
 import { MoonRabbit, Orion, LuncAcademy, Terrarium } from "./components/Validators"
@@ -21,9 +21,7 @@ export default function Ecosystem() {
 function Discords() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Discords
-      </Text>
+      <Text text="Discords" position={[0, 350, 0]} fontSize={70} />
       <Terrarium position={[150, 0, 0]} scale={120} />
       <LuncAcademy position={[-150, 0, 0]} scale={120} />
     </>
@@ -33,9 +31,7 @@ function Discords() {
 function Validators() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Validators
-      </Text>
+      <Text text="Validators" position={[0, 350, 0]} fontSize={70} />
       <MoonRabbit position={[-300, 0, 0]} scale={120} />
       <Orion position={[0, 0, 0]} scale={120} />
       <Terrarium position={[300, 0, 0]} scale={120} />
@@ -46,9 +42,7 @@ function Validators() {
 function Wallets() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Wallets
-      </Text>
+      <Text text="Wallets" position={[0, 350, 0]} fontSize={70} />
     </>
   )
 }
@@ -56,9 +50,7 @@ function Wallets() {
 function Finance() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Finance
-      </Text>
+      <Text text="Finance" position={[0, 350, 0]} fontSize={70} />
     </>
   )
 }
@@ -66,9 +58,7 @@ function Finance() {
 function Games() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={70}>
-        Games
-      </Text>
+      <Text text="Games" position={[0, 350, 0]} fontSize={70} />
     </>
   )
 }

@@ -1,19 +1,17 @@
 import { useState, Suspense } from "react"
-import { RoundedBox, Text } from "@react-three/drei"
+import { RoundedBox, useCursor } from "@react-three/drei"
 import { animated, useSpringValue } from "@react-spring/three"
 import { useWindowSize } from "@uidotdev/usehooks"
 
+import Text from "./Text"
+import Button from "./Button"
+
 export default function Navbar({ state, children, names }) {
   const position = calculatePosition(state.origin.use(), state.translation.use(), useWindowSize())
+
   return (
     <>
-      <group position={position}>
-        <Bar state={state} pages={children} />
-        <Selected state={state} pages={children} />
-        {children.map((page, index) => (
-          <Button key={index} state={state} pages={children} index={index} names={names} />
-        ))}
-      </group>
+      <Bar position={position} state={state} children={children} names={names} />
       <Pages state={state} children={children} />
     </>
   )
@@ -22,91 +20,127 @@ export default function Navbar({ state, children, names }) {
 function Pages({ state, children }) {
   const size = useWindowSize()
   const selected = state.selected.use()
-  const direction = state.direction.use()
+  const horizontal = state.direction.use() === "horizontal"
 
-  const spring = useSpringValue(selected * (direction === "horizontal" ? size.width : size.height), {
-    config: { mass: 1.7, friction: 30, tension: 200, clamp: false },
-  })
-  spring.start(selected * (direction === "horizontal" ? size.width : size.height))
+  const spring = useSpringValue(selected)
+  spring.start(selected)
 
   return (
     <>
-      {children.map((page, index) => (
-        <animated.group key={index} position={spring.to((value) => (direction === "horizontal" ? [index * size.width - value, 0, 0] : [0, index * -size.height + value, 0]))}>
-          <Suspense>{page}</Suspense>
+      {children.map((child, i) => (
+        <animated.group
+          key={i}
+          position={spring.to((value) =>
+            horizontal ? [i * size.width - value * (horizontal ? size.width : size.height), 0, 0] : [0, i * -size.height + value * (horizontal ? size.width : size.height), 0]
+          )}
+        >
+          {child}
         </animated.group>
       ))}
     </>
   )
 }
 
-function Bar({ state, pages }) {
+// function Pages({ state, children }) {
+//   const size = useWindowSize()
+//   const selected = state.selected.use()
+//   const previous = state.previous.use()
+//   const horizontal = state.direction.use() === "horizontal"
+//   const [animating, setAnimating] = useState(false)
+
+//   const spring = useSpringValue(selected)
+//   spring.start(selected, { onStart: () => setAnimating(true), onRest: () => setAnimating(false) })
+
+//   return (
+//     <>
+//       {children.map((child, i) => (
+//         <animated.group
+//           key={i}
+//           position={spring.to((value) =>
+//             horizontal ? [i * size.width - value * (horizontal ? size.width : size.height), 0, 0] : [0, i * -size.height + value * (horizontal ? size.width : size.height), 0]
+//           )}
+//         >
+//           {child}
+//         </animated.group>
+//       ))}
+//     </>
+//   )
+// }
+
+function Bar({ position, state, children, names }) {
   const width = state.width.use()
   const radius = state.radius.use()
   const direction = state.direction.use()
-
-  return (
-    <>
-      {direction === "horizontal" ? (
-        <mesh rotation-z={90 * (Math.PI / 180)}>
-          <capsuleGeometry args={[radius, width - radius * 2]} />
-          <meshStandardMaterial color={"black"} metalness={0.8} />
-        </mesh>
-      ) : (
-        <RoundedBox args={[width, radius * 3 * pages.length - radius, 40]} bevelSegments={2} radius={20}>
-          <meshStandardMaterial color={"black"} metalness={0.8} />
-        </RoundedBox>
-      )}
-    </>
-  )
-}
-
-function Selected({ state, pages }) {
-  const width = state.width.use()
-  const radius = state.radius.use()
-  const height = radius * 3 * pages.length
-  const direction = state.direction.use()
-  const selected = state.selected.use()
-  const spring = useSpringValue(0, { config: { mass: 1.7, friction: 20, tension: 200, clamp: false } })
-  spring.start(selected)
-
-  const color = ["hsl(45, 100%, 20%)", "hsl(180, 100%, 20%)", "hsl(300, 100%, 20%)", "hsl(200, 100%, 20%)"][selected]
-
-  return (
-    <>
-      {direction === "horizontal" ? (
-        <animated.mesh position={spring.to((value) => [(width / pages.length) * value - width / 2 + width / pages.length / 2, 0, radius * 2])} rotation-z={90 * (Math.PI / 180)}>
-          <capsuleGeometry args={[radius, width / pages.length - radius * 2]} />
-          <meshStandardMaterial metalness={1} roughness={1} color={color} />
-        </animated.mesh>
-      ) : (
-        <animated.mesh
-          position={spring.to((value) => [0, -(height / pages.length) * value + height / 2 - height / pages.length / 2, radius * 2])}
-          rotation-z={90 * (Math.PI / 180)}
-        >
-          <capsuleGeometry args={[radius, width - radius * 2]} />
-          <meshStandardMaterial metalness={1} roughness={1} color={state.color.use()} />
-        </animated.mesh>
-      )}
-    </>
-  )
-}
-
-function Button({ state, pages, index, names }) {
-  const width = state.width.use()
-  const radius = state.radius.use()
-  const height = radius * 3 * pages.length
-  const horizontal = state.direction.use() === "horizontal"
-  const [hovered, setHover] = useState(false)
-
-  const position = horizontal
-    ? [(width / pages.length) * index - width / 2 + width / pages.length / 2, 0, radius]
-    : [0, -(height / pages.length) * index + height / 2 - height / pages.length / 2, radius]
-  const args = horizontal ? [radius, width / pages.length - radius * 2] : [radius, width - radius * 2]
-  const color = horizontal ? ["hsl(45, 100%, 20%)", "hsl(180, 100%, 20%)", "hsl(300, 100%, 20%)", "hsl(200, 100%, 20%)"][index] : "hsl(44, 100%, 20%)"
 
   return (
     <group position={position}>
+      {direction === "horizontal" ? (
+        <Button width={width} radius={radius} color={"hsl(0, 0%, 16%)"} />
+      ) : (
+        <RoundedBox args={[width, radius * 3 * children.length - radius, 40]} bevelSegments={2} radius={20}>
+          <meshStandardMaterial color={"hsl(0, 0%, 10%)"} metalness={0.8} />
+        </RoundedBox>
+      )}
+      <Selected state={state} children={children} />
+      <Buttons state={state} names={names} children={children} />
+    </group>
+  )
+}
+
+function Selected({ state, children }) {
+  const width = state.width.use()
+  const radius = state.radius.use()
+  const height = radius * 3 * children.length
+  const direction = state.direction.use()
+  const selected = state.selected.use()
+  const spring = useSpringValue(selected)
+  spring.start(selected)
+
+  const color = ["hsl(45, 100%, 30%)", "hsl(180, 100%, 30%)", "hsl(300, 100%, 30%)", "hsl(300, 100%, 20%)"][selected]
+
+  return (
+    <>
+      {direction === "horizontal" ? (
+        <animated.group position={spring.to((value) => [(width / children.length) * value - width / 2 + width / children.length / 2, 0, radius * 4])}>
+          <Button width={width / children.length} radius={radius} color={color} />
+        </animated.group>
+      ) : (
+        <animated.group position={spring.to((value) => [0, -(height / children.length) * value + height / 2 - height / children.length / 2, radius * 4])}>
+          <Button width={width} radius={radius} color={state.color.use()} />
+        </animated.group>
+      )}
+    </>
+  )
+}
+
+function Buttons({ state, names, children }) {
+  const horizontal = state.direction.use() === "horizontal"
+  const width = state.width.use()
+  const radius = state.radius.use()
+  const height = radius * 3 * children.length
+
+  return (
+    <>
+      {children.map((_, i) => (
+        <group
+          key={i}
+          position-x={horizontal ? (width / children.length) * i - width / 2 + width / children.length / 2 : 0}
+          position-y={horizontal ? 0 : -(height / children.length) * i + height / 2 - height / children.length / 2}
+        >
+          <TransparentButton key={i} state={state} index={i} children={children} width={width} radius={radius} horizontal={horizontal} />
+          <Text text={names[i]} position-z={radius * 5} fontSize={25} />
+        </group>
+      ))}
+    </>
+  )
+}
+
+function TransparentButton({ state, index, children, width, radius, horizontal }) {
+  const [hovered, setHover] = useState(false)
+  useCursor(hovered)
+
+  return (
+    <Suspense>
       <mesh
         onPointerOver={() => setHover(true)}
         onPointerOut={() => setHover(false)}
@@ -114,15 +148,16 @@ function Button({ state, pages, index, names }) {
         rotation-z={90 * (Math.PI / 180)}
         position-z={radius}
       >
-        <capsuleGeometry args={args} />
-        <meshStandardMaterial transparent={true} opacity={hovered ? 0.25 : 0} metalness={1} roughness={1} color={color} />
+        <capsuleGeometry args={[radius, horizontal ? width / children.length - radius * 2 : width - radius * 2]} />
+        <meshStandardMaterial
+          transparent={true}
+          opacity={hovered ? 0.25 : 0}
+          metalness={1}
+          roughness={1}
+          color={horizontal ? ["hsl(45, 100%, 20%)", "hsl(180, 100%, 20%)", "hsl(300, 100%, 20%)", "hsl(200, 100%, 20%)"][index] : "hsl(44, 100%, 20%)"}
+        />
       </mesh>
-      <Suspense>
-        <Text position-z={radius * 2} font={"./GothamLight.otf"} fontSize={22}>
-          {names[index]}
-        </Text>
-      </Suspense>
-    </group>
+    </Suspense>
   )
 }
 

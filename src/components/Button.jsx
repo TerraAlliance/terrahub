@@ -1,24 +1,42 @@
+import { useContext } from "react"
 import { useState, Suspense } from "react"
-import { Text, useCursor } from "@react-three/drei"
+import { useCursor } from "@react-three/drei"
+import { context } from "../global"
 
-export default function Button({ position, width, radius, color, text, textProps, onClick, opacity, geometry }) {
+export default function Button({ position, width, radius, color, hoveredColor, onClick }) {
+  const models = useContext(context)
   const [hovered, setHover] = useState(false)
   useCursor(hovered)
 
   return (
     <Suspense>
       <group position={position}>
-        <mesh geometry={geometry} rotation-z={Math.PI / 2} onPointerOver={() => setHover(true)} onPointerOut={() => setHover(false)} onClick={onClick}>
-          {!geometry && <capsuleGeometry args={[radius, width - radius * 2]} />}
-          <meshStandardMaterial transparent={true} opacity={hovered ? opacity / 2 : opacity} metalness={1} roughness={1} color={color} />
-        </mesh>
-        <Suspense>
-          {text && (
-            <Text position-z={radius} {...textProps}>
-              {text}
-            </Text>
-          )}
-        </Suspense>
+        <models.RoughHalfSphere
+          position-x={-width / 2 + radius}
+          rotation-z={Math.PI / 2}
+          scale={radius}
+          color={hovered ? hoveredColor : color}
+          onPointerOver={() => setHover(true)}
+          onPointerOut={() => setHover(false)}
+          onClick={onClick}
+        />
+        <models.RoughHalfSphere
+          position-x={width / 2 - radius}
+          rotation-z={-Math.PI / 2}
+          scale={radius}
+          color={hovered ? hoveredColor : color}
+          onPointerOver={() => setHover(true)}
+          onPointerOut={() => setHover(false)}
+          onClick={onClick}
+        />
+        <models.RoughCylinder
+          rotation-z={Math.PI / 2}
+          scale={[radius, width - radius * 2, radius]}
+          color={hovered ? hoveredColor : color}
+          onPointerOver={() => setHover(true)}
+          onPointerOut={() => setHover(false)}
+          onClick={onClick}
+        />
       </group>
     </Suspense>
   )

@@ -1,14 +1,16 @@
-import { useRef, Suspense } from "react"
-import { MeshStandardMaterial, Shape, BoxGeometry, CylinderGeometry, SphereGeometry } from "three"
+import { useRef, useState, Suspense, useContext } from "react"
+import { MeshStandardMaterial, Shape, SphereGeometry } from "three"
 import { useFrame } from "@react-three/fiber"
 import { Extrude, useGLTF } from "@react-three/drei"
+import { useSpringValue, animated } from "@react-spring/three"
+import { context } from "../global"
 
 // Dai
 
-const whitemetal = new MeshStandardMaterial({ roughness: 0.3, metalness: 1, color: "white" })
-const box = new BoxGeometry(1, 1, 1)
-const cylinder = new CylinderGeometry(0.7, 0.7, 0.1, 32, 1, false)
-const sphere = new SphereGeometry(1, 32, 32)
+const metal = new MeshStandardMaterial({ roughness: 0.5, metalness: 1, color: "white" })
+// import { CylinderGeometry } from "three"
+// const cylinder = new CylinderGeometry(0.7, 0.7, 0.1, 32, 1, false)
+// const sphere = new SphereGeometry(1, 64, 64)
 
 const y = 0.55
 const x = 0.72
@@ -19,35 +21,40 @@ arcShape.bezierCurveTo(0, -y, 0, -(y - 0.1), 0, -(y - 0.1))
 arcShape.bezierCurveTo(x - 0.15, -(y - 0.2), x - 0.15, y - 0.2, 0, y - 0.1)
 
 export function Dai({ position, scale }) {
-  const letterD = useRef()
+  const models = useContext(context)
+
+  const D = useRef()
   const barrels = useRef()
   useFrame((state, delta) => {
-    letterD.current.rotation.y += delta * 0.5
+    D.current.rotation.y += delta * 0.5
     barrels.current.position.y = Math.sin(state.clock.elapsedTime) * 0.3
   })
 
   return (
-    <group position={position} scale={scale}>
-      <group ref={letterD}>
-        <Extrude position={[0, 0, -0.05]} args={[arcShape, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={whitemetal} />
-        <mesh geometry={box} scale={[0.1, 1.1, 0.1]} position={[-0.4, 0, 0]} material={whitemetal} />
-        <mesh geometry={box} scale={[0.4, 0.1, 0.1]} position={[-0.2, 0.5, 0]} material={whitemetal} />
-        <mesh geometry={box} scale={[0.4, 0.1, 0.1]} position={[-0.2, -0.5, 0]} material={whitemetal} />
+    <Suspense>
+      <group position={position} scale={scale}>
+        <group ref={D}>
+          <Extrude position={[0, 0, -0.05]} args={[arcShape, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={metal} />
+          <models.MetalBox scale={[0.1, 1.1, 0.1]} position={[-0.4, 0, 0]} color={"white"} />
+          <models.MetalBox scale={[0.4, 0.1, 0.1]} position={[-0.2, 0.5, 0]} color={"white"} />
+          <models.MetalBox scale={[0.4, 0.1, 0.1]} position={[-0.2, -0.5, 0]} color={"white"} />
+        </group>
+        <group ref={barrels}>
+          <models.MetalCylinder position={[0, 0.13, 0]} rotation={[0.1, 0, 0]} scale={[0.7, 0.1, 0.7]} color={"white"} />
+          <models.MetalCylinder position={[0, -0.13, 0]} rotation={[0.1, 0, 0]} scale={[0.7, 0.1, 0.7]} color={"white"} />
+          {/* <mesh geometry={cylinder} position={[0, 0.13, 0]} rotation={[0.1, 0, 0]} material={metal} />
+          <mesh geometry={cylinder} position={[0, -0.13, 0]} rotation={[0.1, 0, 0]} material={metal} /> */}
+        </group>
+        <models.TransparentSphere color={0xf5af3d} />
       </group>
-      <group ref={barrels}>
-        <mesh geometry={cylinder} position={[0, 0.13, 0]} rotation={[0.1, 0, 0]} material={whitemetal} />
-        <mesh geometry={cylinder} position={[0, -0.13, 0]} rotation={[0.1, 0, 0]} material={whitemetal} />
-      </group>
-      <mesh geometry={sphere}>
-        <meshStandardMaterial transparent={true} roughness={0.4} metalness={1} opacity={0.5} color={0xf5af3d} />
-      </mesh>
-    </group>
+    </Suspense>
   )
 }
 
 // Usdt
 
 export function Usdt({ position, scale }) {
+  const models = useContext(context)
   const letterT = useRef()
   const barrel = useRef()
 
@@ -57,36 +64,33 @@ export function Usdt({ position, scale }) {
   })
 
   return (
-    <group position={position} scale={scale}>
-      <group ref={letterT}>
-        <mesh material={whitemetal}>
-          <boxGeometry args={[0.25, 1, 0.25]} />
-        </mesh>
-        <mesh position={[0, 0.4, 0]} material={whitemetal}>
-          <boxGeometry args={[0.9, 0.25, 0.25]} />
-        </mesh>
+    <Suspense>
+      <group position={position} scale={scale}>
+        <group ref={letterT}>
+          <models.MetalBox scale={[0.25, 1, 0.25]} color={"white"} />
+          <models.MetalBox position={[0, 0.4, 0]} scale={[0.9, 0.25, 0.25]} color={"white"} />
+        </group>
+        {/* <mesh ref={barrel} geometry={cylinder} position={[0, 0, 0]} rotation={[0.1, 0, 0]} material={metal} /> */}
+        <models.MetalCylinder ref={barrel} position={[0, 0, 0]} rotation={[0.1, 0, 0]} scale={[0.7, 0.1, 0.7]} color={"white"} />
+        <models.TransparentSphere color={0x0b9898} />
       </group>
-      <mesh ref={barrel} geometry={cylinder} position={[0, 0, 0]} rotation={[0.1, 0, 0]} material={whitemetal} />
-      <mesh geometry={sphere}>
-        <meshStandardMaterial transparent={true} roughness={0.4} metalness={1} opacity={0.5} color={0x0b9898} />
-      </mesh>
-    </group>
+    </Suspense>
   )
 }
 
 // Usdc
 
-const sShape = new Shape()
-sShape.moveTo(0.25, 0.2)
-sShape.bezierCurveTo(0.25, 0.2, 0.25, 0.4, 0, 0.4)
-sShape.bezierCurveTo(-0.35, 0.4, -0.35, -0.05, 0, -0.05)
-sShape.bezierCurveTo(0.2, -0.05, 0.2, -0.3, 0, -0.3)
-sShape.bezierCurveTo(-0.15, -0.3, -0.15, -0.2, -0.15, -0.2)
-sShape.bezierCurveTo(-0.15, -0.2, -0.25, -0.2, -0.25, -0.2)
-sShape.bezierCurveTo(-0.25, -0.2, -0.25, -0.4, 0, -0.4)
-sShape.bezierCurveTo(0.35, -0.4, 0.35, 0.05, 0, 0.05)
-sShape.bezierCurveTo(-0.2, 0.05, -0.2, 0.3, 0, 0.3)
-sShape.bezierCurveTo(0.15, 0.3, 0.15, 0.2, 0.15, 0.2)
+const S = new Shape()
+S.moveTo(0.25, 0.2)
+S.bezierCurveTo(0.25, 0.2, 0.25, 0.4, 0, 0.4)
+S.bezierCurveTo(-0.35, 0.4, -0.35, -0.05, 0, -0.05)
+S.bezierCurveTo(0.2, -0.05, 0.2, -0.3, 0, -0.3)
+S.bezierCurveTo(-0.15, -0.3, -0.15, -0.2, -0.15, -0.2)
+S.bezierCurveTo(-0.15, -0.2, -0.25, -0.2, -0.25, -0.2)
+S.bezierCurveTo(-0.25, -0.2, -0.25, -0.4, 0, -0.4)
+S.bezierCurveTo(0.35, -0.4, 0.35, 0.05, 0, 0.05)
+S.bezierCurveTo(-0.2, 0.05, -0.2, 0.3, 0, 0.3)
+S.bezierCurveTo(0.15, 0.3, 0.15, 0.2, 0.15, 0.2)
 
 const arc = new Shape()
 arc.moveTo(0.2, 0.75)
@@ -95,6 +99,7 @@ arc.bezierCurveTo(0.2, -0.75, 0.2, -0.65, 0.2, -0.65)
 arc.bezierCurveTo(0.85, -0.5, 0.85, 0.5, 0.2, 0.65)
 
 export function Usdc({ position, scale }) {
+  const models = useContext(context)
   const dollarsign = useRef()
   const arcs = useRef()
 
@@ -104,61 +109,69 @@ export function Usdc({ position, scale }) {
   })
 
   return (
-    <group position={position} scale={scale}>
-      <group ref={dollarsign}>
-        <mesh geometry={box} scale={[0.1, 0.15, 0.1]} position={[0, 0.45, 0]} material={whitemetal} />
-        <mesh geometry={box} scale={[0.1, 0.15, 0.1]} position={[0, -0.45, 0]} material={whitemetal} />
-        <Extrude position={[0, 0, -0.05]} args={[sShape, { curveSegments: 24, steps: 1, depth: 0.1, bevelEnabled: false }]} material={whitemetal} />
+    <Suspense>
+      <group position={position} scale={scale}>
+        <group ref={dollarsign}>
+          <models.MetalBox position={[0, 0.45, 0]} scale={[0.1, 0.15, 0.1]} color={"white"} />
+          <models.MetalBox position={[0, -0.45, 0]} scale={[0.1, 0.15, 0.1]} color={"white"} />
+          <Extrude position={[0, 0, -0.05]} args={[S, { curveSegments: 24, steps: 1, depth: 0.1, bevelEnabled: false }]} material={metal} />
+        </group>
+        <group ref={arcs}>
+          <Extrude position={[0, 0, -0.05]} args={[arc, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={metal} />
+          <Extrude position={[0, 0, 0.05]} rotation={[0, Math.PI, 0]} args={[arc, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={metal} />
+        </group>
+        <models.TransparentSphere color={0x2671c4} />
       </group>
-      <group ref={arcs}>
-        <Extrude position={[0, 0, -0.05]} args={[arc, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={whitemetal} />
-        <Extrude position={[0, 0, 0.05]} rotation={[0, Math.PI, 0]} args={[arc, { curveSegments: 48, steps: 1, depth: 0.1, bevelEnabled: false }]} material={whitemetal} />
-      </group>
-      <mesh geometry={sphere}>
-        <meshStandardMaterial transparent={true} roughness={0.4} metalness={1} opacity={0.5} color={0x2671c4} />
-      </mesh>
-    </group>
+    </Suspense>
   )
 }
 
 // Ibc
 
-const cylinder1 = new CylinderGeometry(0.3, 0.3, 5)
-const material3 = new MeshStandardMaterial({ color: "purple", transparent: true, opacity: 0.1 })
-const material4 = new MeshStandardMaterial({ roughness: 0.25, metalness: 1, color: "purple" })
+// const cylinder1 = new CylinderGeometry(0.3, 0.3, 5)
+// const material4 = new MeshStandardMaterial({ roughness: 0.5, metalness: 1, color: "purple" })
 
 export function Ibc({ position, scale }) {
+  const models = useContext(context)
   const group = useRef()
   useFrame((state, delta) => {
     group.current.rotation.z += delta * 0.5
   })
 
   return (
-    <group position={position} scale={scale}>
-      <mesh geometry={sphere} material={material3} />
-      <group ref={group}>
-        <group rotation={[0, 0, Math.PI / 3]}>
-          <mesh position={[0, -0.6, 0]} geometry={sphere} material={material4} scale={0.25} />
-          <mesh position={[0, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} geometry={cylinder1} material={material4} scale={0.25} />
+    <Suspense>
+      <group position={position} scale={scale}>
+        <group ref={group}>
+          <group rotation={[0, 0, Math.PI / 3]}>
+            <models.MetalSphere position={[0, -0.6, 0]} color={0xac73fd} scale={0.25} />
+            <models.MetalCylinder position={[0, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} scale={[0.075, 1.25, 0.075]} color={0xac73fd} />
+            {/* <mesh position={[0, -0.6, 0]} geometry={sphere} material={material4} scale={0.25} />
+            <mesh position={[0, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} geometry={cylinder1} material={material4} scale={0.25} /> */}
+          </group>
+          <group rotation={[0, 0, -Math.PI / 3]}>
+            <models.MetalSphere position={[0, -0.6, 0]} color={0xac73fd} scale={0.25} />
+            <models.MetalCylinder position={[0, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} scale={[0.075, 1.25, 0.075]} color={0xac73fd} />
+            {/* <mesh position={[0, -0.6, 0]} geometry={sphere} material={material4} scale={0.25} />
+            <mesh position={[0, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} geometry={cylinder1} material={material4} scale={0.25} /> */}
+          </group>
+          <group rotation={[0, 0, Math.PI / 1]}>
+            <models.MetalSphere position={[0, -0.6, 0]} color={0xac73fd} scale={0.25} />
+            <models.MetalCylinder position={[0, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} scale={[0.075, 1.25, 0.075]} color={0xac73fd} />
+            {/* <mesh position={[0, -0.6, 0]} geometry={sphere} material={material4} scale={0.25} />
+            <mesh position={[0, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} geometry={cylinder1} material={material4} scale={0.25} /> */}
+          </group>
         </group>
-        <group rotation={[0, 0, -Math.PI / 3]}>
-          <mesh position={[0, -0.6, 0]} geometry={sphere} material={material4} scale={0.25} />
-          <mesh position={[0, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} geometry={cylinder1} material={material4} scale={0.25} />
-        </group>
-        <group rotation={[0, 0, Math.PI / 1]}>
-          <mesh position={[0, -0.6, 0]} geometry={sphere} material={material4} scale={0.25} />
-          <mesh position={[0, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} geometry={cylinder1} material={material4} scale={0.25} />
-        </group>
+        <models.VeryTransparentSphere color={0xac73fd} />
       </group>
-    </group>
+    </Suspense>
   )
 }
 
 // Lunc
 
 export function Lunc({ position, scale }) {
+  const models = useContext(context)
   const { nodes } = useGLTF("/lunc.glb")
-
   const mesh = useRef()
   useFrame((state, delta) => {
     mesh.current.rotation.y += delta * 0.4
@@ -166,58 +179,15 @@ export function Lunc({ position, scale }) {
 
   return (
     <Suspense>
-      <group position={position} scale={scale} ref={mesh} rotation={[0, -Math.PI / 2, Math.PI / 2]}>
-        <mesh geometry={nodes.Sphere.geometry}>
-          <meshStandardMaterial roughness={0.25} metalness={1} color={0xfcba03} />
+      <group position={position} scale={scale} ref={mesh}>
+        <mesh geometry={nodes.Mesh_0.geometry}>
+          <meshStandardMaterial roughness={0.5} metalness={1} color={0xfcba03} />
         </mesh>
-        <mesh geometry={nodes.Sphere1.geometry}>
-          <meshStandardMaterial roughness={0.25} metalness={1} color={0xfcba03} />
-        </mesh>
-      </group>
-      <mesh geometry={sphere} position={position} scale={scale}>
-        <meshStandardMaterial transparent={true} opacity={0.3} color={"darkorange"} />
-      </mesh>
-    </Suspense>
-  )
-}
-
-import { Geometry, Base, Subtraction, Intersection } from "@react-three/csg"
-
-export function CSGLunc({ position, scale }) {
-  const group = useRef()
-  useFrame((state, delta) => {
-    group.current.rotation.y += delta * 0.4
-  })
-
-  return (
-    <Suspense>
-      <group ref={group} position={position} scale={scale}>
-        <mesh>
-          <Geometry>
-            <Base rotation={[0, 0, Math.PI / 2]}>
-              <sphereGeometry args={[1, 100, 100]} />
-            </Base>
-            <Subtraction position={[0.82, 1.175, 0]} scale={[1.5, 1.5, 5]}>
-              <sphereGeometry args={[1, 100, 100]} />
-            </Subtraction>
-          </Geometry>
-          <meshStandardMaterial roughness={0.25} metalness={1} color={0xfcba03} />
-        </mesh>
-        <mesh>
-          <Geometry>
-            <Base rotation={[0, 0, Math.PI / 2]}>
-              <sphereGeometry args={[1, 100, 100]} />
-            </Base>
-            <Intersection position={[0.82, 1.9, 0]} scale={[1.6, 1.5, 2.5]}>
-              <sphereGeometry args={[1, 100, 100]} />
-            </Intersection>
-          </Geometry>
-          <meshStandardMaterial roughness={0.25} metalness={1} color={0xfcba03} />
+        <mesh geometry={nodes.Mesh_1.geometry}>
+          <meshStandardMaterial roughness={0.5} metalness={1} color={0xfcba03} />
         </mesh>
       </group>
-      <mesh geometry={sphere} position={position} scale={scale}>
-        <meshStandardMaterial transparent={true} opacity={0.3} color={"darkorange"} />
-      </mesh>
+      <models.VeryTransparentSphere position={position} scale={scale * 0.997} color={0xfcba03} />
     </Suspense>
   )
 }
@@ -358,9 +328,9 @@ varying vec3 vPosition;
 varying float vNoise;
 	
 void main() {
-	float alpha = 0.2;
+	float alpha = 0.1;
 	float gradient = mix(0.,1.,-vPosition.y+1.75);
-	if(vNoise > 0.3 * gradient) {alpha = 0.03;}
+	if(vNoise > 0.3 * gradient) {alpha = 0.05;}
 	float mask = mix(0.3,1.,-vPosition.y+0.5);
 	alpha = alpha * (mask * 10.);
 	vec3 color = mix(uColor1 / 255.,uColor2 / 255.,-vPosition.y+0.5);
@@ -392,3 +362,196 @@ export function FireSphere({ position = [0, 0, 0], scale = 100 }) {
 
   return <mesh geometry={geometry} position={position} ref={mesh} scale={scale} material={material} />
 }
+
+// import { useTexture } from "@react-three/drei"
+// import useSound from "use-sound"
+// import sound from "/sounds/sound_13.mp3"
+
+// const flags = ["us", "tw", "th", "sg", "se", "imf", "ph", "sj", "my", "mn", "kr", "jp", "in", "id", "hk", "sh", "eu", "dk", "cn", "ch", "ca", "au"]
+
+// export function Terra({ position, scale, onClick, animate, flag, setFlag }) {
+//   const [hovered, setHover] = useState(false)
+//   const { nodes } = useGLTF("/smallterra.glb")
+//   const explode = useSpringValue(0, { config: { mass: 1, friction: 15, tension: 350, clamp: true } })
+//   const material = new MeshStandardMaterial({ roughness: 0.5, metalness: 1, color: 0x1e90ff })
+//   // 0x0063ff
+
+//   const [rotation, setRotation] = useState(0)
+//   const flagRotation = useSpringValue(0, { config: { mass: 1, friction: 15, tension: 150, clamp: false } })
+
+//   const [play] = useSound(sound, { volume: 0.5 })
+
+//   const group = useRef()
+//   useFrame((state, delta) => {
+//     if (!hovered) group.current.rotation.y += delta * 0.5
+//   })
+
+//   const handleClick = () => {
+//     animate &&
+//       explode
+//         .start(scale * 2.5)
+//         .then(() => explode.start(0))
+//         .then(() => onClick && onClick())
+//   }
+
+//   return (
+//     <group position={position}>
+//       <group ref={group}>
+//         <animated.mesh material={material} position={explode.to((v) => [-v, 0, -v])} scale={scale} geometry={nodes.mesh_0.geometry}></animated.mesh>
+//         <animated.mesh material={material} position={explode.to((v) => [-v, 0, v])} scale={scale} geometry={nodes.mesh_1.geometry}></animated.mesh>
+//         <animated.mesh material={material} position={explode.to((v) => [v, 0, -v])} scale={scale} geometry={nodes.mesh_2.geometry}></animated.mesh>
+//         <animated.mesh material={material} position={explode.to((v) => [v, 0, v])} scale={scale} geometry={nodes.mesh_3.geometry}></animated.mesh>
+//       </group>
+//       <animated.mesh
+//         geometry={sphere}
+//         scale={scale * 0.994}
+//         onPointerOver={() => {
+//           setHover(true)
+//           animate && explode.start(scale / 3)
+//         }}
+//         onPointerOut={() => {
+//           setHover(false)
+//           animate && explode.start(0)
+//         }}
+//         onClick={handleClick}
+//         rotation={[0, 0, Math.PI / 2]}
+//       >
+//         <meshStandardMaterial transparent={true} opacity={0.3} color={hovered ? "blue" : "darkblue"} />
+//       </animated.mesh>
+//       {flag !== undefined && (
+//         <>
+//           <Suspense>
+//             <Flag scale={scale} flag={flag} flagRotation={flagRotation} />
+//           </Suspense>
+//           {setFlag && (
+//             <>
+//               <Arrow
+//                 position={[-Math.max(scale * 0.3, 16), -scale / 1.5, 150]}
+//                 scale={Math.max(scale * 1.2, 100)}
+//                 rotation={90}
+//                 onClick={() => {
+//                   play()
+//                   flagRotation.start(rotation - 2)
+//                   setRotation((prev) => prev - 2)
+//                   setTimeout(() => {
+//                     setFlag((flag) => (flag - 1) % flags.length)
+//                   }, 100)
+//                 }}
+//               />
+//               <Arrow
+//                 position={[Math.max(scale * 1.3, 45), -scale / 1.5, 150]}
+//                 scale={Math.max(scale * 1.2, 100)}
+//                 rotation={270}
+//                 onClick={() => {
+//                   play()
+//                   flagRotation.start(rotation + 2)
+//                   setRotation((prev) => prev + 2)
+//                   setTimeout(() => {
+//                     setFlag((flag) => (flag - 1) % flags.length)
+//                   }, 100)
+//                 }}
+//               />
+//             </>
+//           )}
+//         </>
+//       )}
+//     </group>
+//   )
+// }
+
+// const material = new MeshStandardMaterial({ roughness: 0.5, metalness: 1, color: 0x1e90ff })
+
+export function Terra({ position, scale, onClick }) {
+  const models = useContext(context)
+  const [hovered, setHover] = useState(false)
+  const explode = useSpringValue(0, { config: { mass: 1, friction: 15, tension: 400, clamp: true } })
+
+  const group = useRef()
+  useFrame((state, delta) => {
+    !hovered ? (group.current.rotation.y += delta * 0.5) : (group.current.rotation.y = 0)
+  })
+
+  return (
+    <group position={position}>
+      <group ref={group}>
+        <animated.group position={explode.to((v) => [v, v, 0])}>
+          <models.Terra_0 scale={scale} color={"hsl(220, 100%, 70%)"} />
+        </animated.group>
+        <animated.group position={explode.to((v) => [-v, v, 0])}>
+          <models.Terra_1 scale={scale} color={"hsl(220, 100%, 70%)"} />
+        </animated.group>
+        <animated.group position={explode.to((v) => [v, -v, 0])}>
+          <models.Terra_2 scale={scale} color={"hsl(220, 100%, 70%)"} />
+        </animated.group>
+        <animated.group position={explode.to((v) => [-v, -v, 0])}>
+          <models.Terra_3 scale={scale} color={"hsl(220, 100%, 70%)"} />
+        </animated.group>
+        {/* <animated.mesh material={material} position={explode.to((v) => [v, v, 0])} scale={scale} geometry={nodes.mesh_0.geometry}></animated.mesh>
+        <animated.mesh material={material} position={explode.to((v) => [-v, v, 0])} scale={scale} geometry={nodes.mesh_1.geometry}></animated.mesh>
+        <animated.mesh material={material} position={explode.to((v) => [v, -v, -v])} scale={scale} geometry={nodes.mesh_2.geometry}></animated.mesh>
+        <animated.mesh material={material} position={explode.to((v) => [-v, -v, 0])} scale={scale} geometry={nodes.mesh_3.geometry}></animated.mesh> */}
+      </group>
+      <models.VeryTransparentSphere
+        onPointerOver={() => {
+          setHover(true)
+          explode.start(scale / 3)
+        }}
+        onPointerOut={() => {
+          setHover(false)
+          explode.start(0)
+        }}
+        onClick={() => {
+          explode
+            .start(scale)
+            .then(() => explode.start(0))
+            .then(() => onClick && onClick())
+        }}
+        scale={scale * 0.994}
+        color={"hsl(220, 100%, 70%)"}
+      />
+    </group>
+  )
+}
+
+// function Flag({ scale, flag, flagRotation }) {
+//   const texture = useTexture({ map: "flags/" + flags.at(flag) + ".svg" })
+//   const widthSegments = 30
+
+//   const mesh = useRef()
+//   useFrame((state) => {
+//     const vertex = mesh.current.geometry.attributes.position.array
+//     for (let y = 0; y < vertex.length; y += 3) {
+//       for (let x = 0; x < vertex.length; x += 3) {
+//         const index = x + y * (widthSegments + 1)
+//         const time = state.clock.elapsedTime * 10
+//         vertex[index + 2] = (Math.sin(0.2 * x + 0 * y - time) * 0.2 * x) / 4
+//       }
+//     }
+//     mesh.current.geometry.attributes.position.needsUpdate = true
+//   })
+
+//   return (
+//     <animated.group rotation={flagRotation.to((v) => [0, Math.PI * v, 0])}>
+//       <mesh ref={mesh} rotation={[20 * (Math.PI / 180), 0, 0]} position={[scale / 2, -scale / 1.5, scale]} scale={scale / 60}>
+//         <planeGeometry args={[75, 50, widthSegments]} />
+//         <meshBasicMaterial {...texture} />
+//       </mesh>
+//     </animated.group>
+//   )
+// }
+
+// function Arrow({ position, scale, rotation, onClick }) {
+//   const [hovered, setHover] = useState(false)
+//   return (
+//     <group position={position}>
+//       <mesh rotation={[0, 0, rotation * (Math.PI / 180)]} scale={scale / 50}>
+//         <meshStandardMaterial color={0xfcba03} roughness={0.3} metalness={1} />
+//         <coneGeometry args={[2.5, 8]} />
+//       </mesh>
+//       <mesh rotation={[0, 0, 90 * (Math.PI / 180)]} onPointerOver={() => setHover(true)} onPointerOut={() => setHover(false)} onClick={onClick}>
+//         <meshStandardMaterial color={0xfcba03} roughness={0.3} metalness={1} transparent={true} opacity={hovered ? 0.15 : 0.25} />
+//         <capsuleGeometry args={[scale / 12, scale / 12]} />
+//       </mesh>
+//     </group>
+//   )
+// }

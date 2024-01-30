@@ -1,13 +1,10 @@
-import { Text } from "@react-three/drei"
-
+import Text from "../components/Text"
 import SwapMachine from "../components/SwapMachine"
 
 export default function Swap() {
   return (
     <>
-      <Text position={[0, 350, 0]} font="./GothamLight.otf" fontSize={60}>
-        Swap
-      </Text>
+      <Text text="Swap" position={[0, 350, 0]} fontSize={60} />
       <SwapMachine />
     </>
   )

@@ -1,59 +1,44 @@
-import { useRef, useState, useEffect } from "react"
-import { SphereGeometry, MeshStandardMaterial } from "three"
-import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
+import { useRef, useContext, Suspense } from "react"
 import { useFrame } from "@react-three/fiber"
 import { useSpringValue, animated } from "@react-spring/three"
+import { context } from "../global"
 
-const sphere = new SphereGeometry(1, 32, 32)
-const halfsphere = new SphereGeometry(1, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2)
-const roundedbox = new RoundedBoxGeometry(14, 20, 2, 2, 1)
-const white = new MeshStandardMaterial({ roughness: 0.2, metalness: 1, side: 2 })
-const blue = new MeshStandardMaterial({ roughness: 0.2, metalness: 1, color: 0x5494f8 })
-
-export default function Satellite({ position, rotation, scale, startAnimation = 0, onClick }) {
-  const [hovered, setHover] = useState(false)
-  const explode = useSpringValue(14, { config: { mass: 1, friction: 15, tension: 350, clamp: true } })
+export default function Satellite({ position, scale, onClick }) {
+  const models = useContext(context)
+  const explode = useSpringValue(0.5, { config: { mass: 1, friction: 10, tension: 400, clamp: true } })
   const satellite = useRef()
-  useEffect(() => {
-    satellite.current.rotation.y -= startAnimation
-  }, [])
-  useFrame((state, delta) => {
-    satellite.current.rotation.y -= delta * 0.5
-  })
+
+  useFrame((state, delta) => (satellite.current.rotation.y -= delta * 0.6))
 
   return (
-    <>
-      <group position={position} rotation={rotation} scale={scale}>
+    <Suspense>
+      <group position={position} rotation={[0, Math.PI / -5, Math.PI / 2.5]} scale={scale}>
         <group ref={satellite}>
-          <mesh geometry={roundedbox} material={white} />
-          <animated.mesh geometry={roundedbox} material={blue} position={explode.to((v) => [v, 0, 0])} scale={[0.85, 0.4, 0.5]} />
-          <animated.mesh geometry={roundedbox} material={blue} position={explode.to((v) => [-v, 0, 0])} scale={[0.85, 0.4, 0.5]} />
-          <animated.mesh geometry={halfsphere} material={white} position={explode.to((v) => [0, -v - 2, 0])} scale={[6, 6, 6]} />
+          <models.RoughCylinder scale={[0.16, 1, 0.16]} color={"white"} />
+          <animated.group position={explode.to((v) => [v, 0, 0])}>
+            <models.RoughBox scale={[0.6, 0.3, 0.05]} color={0x5494f8} />
+          </animated.group>
+          <animated.group position={explode.to((v) => [-v, 0, 0])}>
+            <models.RoughBox scale={[0.6, 0.3, 0.05]} color={0x5494f8} />
+          </animated.group>
+          <animated.group position={explode.to((v) => [0, -v - 0.12, 0])}>
+            <models.RoughHalfSphere scale={0.12} color={0x5494f8} />
+          </animated.group>
         </group>
       </group>
-      {onClick && (
-        <mesh
-          position={position}
-          geometry={sphere}
-          scale={scale * 22.5}
-          onPointerOver={() => {
-            setHover(true)
-            explode.start(20)
-          }}
-          onPointerOut={() => {
-            setHover(false)
-            explode.start(14)
-          }}
-          onClick={() => {
-            explode
-              .start(35)
-              .then(() => explode.start(14))
-              .then(() => onClick())
-          }}
-        >
-          <meshStandardMaterial color={"black"} transparent={true} opacity={hovered ? 0 : 0.3} />
-        </mesh>
-      )}
-    </>
+      <models.VeryTransparentSphere
+        color={0x5494f8}
+        position={position}
+        scale={scale}
+        onPointerOver={() => explode.start(1)}
+        onPointerOut={() => explode.start(0.5)}
+        onClick={() =>
+          explode
+            .start(2)
+            .then(() => explode.start(0.5))
+            .then(() => onClick())
+        }
+      />
+    </Suspense>
   )
 }

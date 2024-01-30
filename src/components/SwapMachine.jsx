@@ -2,10 +2,9 @@ import { useState } from "react"
 import { animated, useSpringValue } from "@react-spring/three"
 import useSound from "use-sound"
 
-import Terra from "../components/Terra"
-import { Lunc } from "../components/Coins"
-// import sound_1 from "/sounds/sound_11.mp3"
+import { Lunc, Terra } from "../components/Coins"
 import sound_2 from "/sounds/sound_13.mp3"
+// import sound_1 from "/sounds/sound_11.mp3"
 
 export default function SwapMachine() {
   const [swapped, setSwapped] = useState(false)
