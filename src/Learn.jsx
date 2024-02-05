@@ -1,5 +1,4 @@
-import Text from "./components/Text"
-
+import { Text } from "./components/Text"
 import Navbar from "./components/Navbar"
 import MarketPools from "./components/MarketPools"
 import { Dai, Usdt, Usdc } from "./components/Coins"

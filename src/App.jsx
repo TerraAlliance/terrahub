@@ -1,11 +1,28 @@
+import { MeshStandardMaterial, Mesh, BoxGeometry, CylinderGeometry, SphereGeometry } from "three"
 import { Canvas } from "@react-three/fiber"
-import { OrthographicCamera, Stats } from "@react-three/drei"
-import { app } from "./global"
+import { OrthographicCamera, Stats, Merged, useGLTF } from "@react-three/drei"
+
+import { app, context } from "./global"
+import { Perf } from "r3f-perf"
+import { OrbitControls } from "@react-three/drei"
 import Body from "./Body"
-// import { Perf } from "r3f-perf"
-// import { OrbitControls } from "@react-three/drei"
+
+const box = new BoxGeometry(1, 1, 1)
+const cylinder = new CylinderGeometry(1, 1, 1, 8)
+const halfcylinder = new CylinderGeometry(1, 1, 1, 8, 1, true, 0, Math.PI)
+const cylinder32 = new CylinderGeometry(1, 1, 1, 32)
+const sphere = new SphereGeometry(1, 32, 32)
+const halfsphere = new SphereGeometry(1, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2)
+const quartersphere = new SphereGeometry(1, 8, 8, 0, Math.PI, 0, Math.PI / 2)
+
+const rough = new MeshStandardMaterial({ roughness: 1, metalness: 1, side: 2, wireframe: false })
+const metal = new MeshStandardMaterial({ roughness: 0.5, metalness: 1 })
+const transparent = new MeshStandardMaterial({ roughness: 0.5, metalness: 1, transparent: true, opacity: 0.5 })
+const verytransparent = new MeshStandardMaterial({ roughness: 0.5, metalness: 1, transparent: true, opacity: 0.3 })
 
 export default function App() {
+  const { nodes } = useGLTF("/terra.glb")
+
   return (
     <div
       style={{
@@ -17,18 +34,41 @@ export default function App() {
     >
       <Background />
       <Canvas>
-        {/* {process.env.NODE_ENV === "development" ? <Perf position={"bottom-left"} /> : null} */}
-        {/* <OrbitControls enabled={false} enableZoom={false} /> */}
+        {process.env.NODE_ENV === "development" ? <Perf position={"bottom-left"} /> : null}
+        <OrbitControls enabled={false} enableZoom={false} />
         <Stats />
         <OrthographicCamera makeDefault position={[0, 0, 5000]} far={10000} />
-        <Body />
+        <Merged
+          meshes={{
+            RoughBox: new Mesh(box, rough),
+            MetalBox: new Mesh(box, metal),
+            MetalSphere: new Mesh(sphere, metal),
+            TransparentSphere: new Mesh(sphere, transparent),
+            VeryTransparentSphere: new Mesh(sphere, verytransparent),
+            RoughHalfSphere: new Mesh(halfsphere, rough),
+            RoughQuarterSphere: new Mesh(quartersphere, rough),
+            RoughCylinder: new Mesh(cylinder, rough),
+            RoughHalfCylinder: new Mesh(halfcylinder, rough),
+            MetalCylinder: new Mesh(cylinder32, metal),
+            Terra_0: new Mesh(nodes.Mesh_0.geometry, metal),
+            Terra_1: new Mesh(nodes.Mesh_1.geometry, metal),
+            Terra_2: new Mesh(nodes.Mesh_2.geometry, metal),
+            Terra_3: new Mesh(nodes.Mesh_3.geometry, metal),
+          }}
+        >
+          {(models) => (
+            <context.Provider value={models}>
+              <Body />
+            </context.Provider>
+          )}
+        </Merged>
       </Canvas>
     </div>
   )
 }
 
 function Background() {
-  const selected = app.mainnav.selected.use()
+  const selected = app.mainnav.selected.get()
   const classname = ["wallet", "learn", "ecosystem", "explore"][selected]
 
   return (

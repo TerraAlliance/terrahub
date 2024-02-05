@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { Text, Plane } from "@react-three/drei"
 import { useGesture } from "@use-gesture/react"
 import { SphereGeometry, MeshPhongMaterial } from "three"
@@ -45,13 +45,13 @@ export default function Slider({ position = [0, 0, 0], scale = [1, 1, 1], handle
   }
 
   return (
-    <>
+    <Suspense>
       <Text position={[position[0], position[1] + 30, position[2]]} font={"./GothamLight.otf"} fontSize={fontSize} color="yellow">
         {text}
       </Text>
       <Knob position={position} scale={scale} value={value} bind={bind} active={active} />
       <Track position={position} scale={scale} handleClick={handleClick} />
-    </>
+    </Suspense>
   )
 }
 

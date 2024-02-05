@@ -1,4 +1,4 @@
-import Text from "../components/Text"
+import { Text } from "../components/Text"
 import SwapMachine from "../components/SwapMachine"
 
 export default function Swap() {

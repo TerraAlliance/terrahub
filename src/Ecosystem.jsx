@@ -1,5 +1,4 @@
-import Text from "./components/Text"
-
+import { Text } from "./components/Text"
 import Navbar from "./components/Navbar"
 import { MoonRabbit, Orion, LuncAcademy, Terrarium } from "./components/Validators"
 import { app } from "./global"

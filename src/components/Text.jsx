@@ -1,12 +1,9 @@
-import { Suspense } from "react"
 import { Text as _Text } from "@react-three/drei"
 
-export default function Text({ children, font, ...props }) {
-  return (
-    <Suspense>
-      <_Text font={font || "./FuturaLightEmoji.ttf"} {...props}>
-        {children}
-      </_Text>
-    </Suspense>
-  )
+export function Text({ font, ...props }) {
+  return <_Text font={font || "./FuturaLightEmoji.ttf"} {...props} />
+}
+
+export function Title({ font, ...props }) {
+  return <Text fontSize={70} {...props} />
 }

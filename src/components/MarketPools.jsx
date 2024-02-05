@@ -1,11 +1,23 @@
+import { Suspense } from "react"
 import { useWindowSize } from "@uidotdev/usehooks"
 
 export default function MarketPools() {
   const size = useWindowSize()
+
   return (
-    <group scale={Math.min(size.width / 6, 130)}>
-      <Stablecoin />
-      <Collateral />
+    <Suspense>
+      <group scale={Math.min(size.width / 6, 130)}>
+        <Stablecoin />
+        <Collateral />
+        <Bridge />
+      </group>
+    </Suspense>
+  )
+}
+
+function Bridge() {
+  return (
+    <>
       <mesh position={[0, 0, 0]} rotation-z={90 * (Math.PI / 180)}>
         <cylinderGeometry args={[0.1, 0.1, 1, 32]} />
         <meshStandardMaterial color={"white"} transparent={true} opacity={0.3} />
@@ -18,7 +30,7 @@ export default function MarketPools() {
         <cylinderGeometry args={[0.1, 0.1, 0.5, 32, 1, false, Math.PI, Math.PI]} />
         <meshStandardMaterial color={"blue"} roughness={0.3} metalness={1} transparent={true} opacity={1} />
       </mesh>
-    </group>
+    </>
   )
 }
 

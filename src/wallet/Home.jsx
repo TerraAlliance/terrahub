@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 
-import Text from "../components/Text"
+import { Text } from "../components/Text"
 import { Lunc } from "../components/Coins"
 
 export default function Home() {

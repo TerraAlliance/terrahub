@@ -1,17 +1,16 @@
-import { useState, Suspense } from "react"
-import { RoundedBox, useCursor } from "@react-three/drei"
+import { Suspense } from "react"
+import { useObservable } from "@legendapp/state/react"
+import { useCursor } from "@react-three/drei"
 import { animated, useSpringValue } from "@react-spring/three"
 import { useWindowSize } from "@uidotdev/usehooks"
 
-import Text from "./Text"
+import { Text } from "./Text"
 import Button from "./Button"
 
 export default function Navbar({ state, children, names }) {
-  const position = calculatePosition(state.origin.use(), state.translation.use(), useWindowSize())
-
   return (
     <>
-      <Bar position={position} state={state} children={children} names={names} />
+      <Bar position={calculatePosition(state.origin.get(), state.translation.get(), useWindowSize())} state={state} children={children} names={names} />
       <Pages state={state} children={children} />
     </>
   )
@@ -19,10 +18,13 @@ export default function Navbar({ state, children, names }) {
 
 function Pages({ state, children }) {
   const size = useWindowSize()
-  const selected = state.selected.use()
-  const horizontal = state.direction.use() === "horizontal"
 
-  const spring = useSpringValue(selected)
+  const selected = state.selected.get()
+  const previous = state.previous.get()
+  const animating = state.animating.get()
+  const horizontal = state.direction.get() === "horizontal"
+
+  const spring = useSpringValue(selected, { onRest: () => state.animating.set(false) })
   spring.start(selected)
 
   return (
@@ -34,79 +36,52 @@ function Pages({ state, children }) {
             horizontal ? [i * size.width - value * (horizontal ? size.width : size.height), 0, 0] : [0, i * -size.height + value * (horizontal ? size.width : size.height), 0]
           )}
         >
-          {child}
+          {(selected === i || (previous === i && animating)) && child}
         </animated.group>
       ))}
     </>
   )
 }
 
-// function Pages({ state, children }) {
-//   const size = useWindowSize()
-//   const selected = state.selected.use()
-//   const previous = state.previous.use()
-//   const horizontal = state.direction.use() === "horizontal"
-//   const [animating, setAnimating] = useState(false)
-
-//   const spring = useSpringValue(selected)
-//   spring.start(selected, { onStart: () => setAnimating(true), onRest: () => setAnimating(false) })
-
-//   return (
-//     <>
-//       {children.map((child, i) => (
-//         <animated.group
-//           key={i}
-//           position={spring.to((value) =>
-//             horizontal ? [i * size.width - value * (horizontal ? size.width : size.height), 0, 0] : [0, i * -size.height + value * (horizontal ? size.width : size.height), 0]
-//           )}
-//         >
-//           {child}
-//         </animated.group>
-//       ))}
-//     </>
-//   )
-// }
-
 function Bar({ position, state, children, names }) {
-  const width = state.width.use()
-  const radius = state.radius.use()
-  const direction = state.direction.use()
+  const width = state.width.get()
+  const radius = state.radius.get()
+  const direction = state.direction.get()
 
   return (
     <group position={position}>
-      {direction === "horizontal" ? (
-        <Button width={width} radius={radius} color={"hsl(0, 0%, 16%)"} />
-      ) : (
-        <RoundedBox args={[width, radius * 3 * children.length - radius, 40]} bevelSegments={2} radius={20}>
-          <meshStandardMaterial color={"hsl(0, 0%, 10%)"} metalness={0.8} />
-        </RoundedBox>
-      )}
       <Selected state={state} children={children} />
       <Buttons state={state} names={names} children={children} />
+      {direction === "horizontal" ? (
+        <Button width={width - radius * 2} radius={radius} color={"hsl(0, 0%, 16%)"} />
+      ) : (
+        <Button width={width} height={radius * 3 * children.length - radius * 3} radius={radius} color={"hsl(0, 0%, 16%)"} />
+      )}
     </group>
   )
 }
 
 function Selected({ state, children }) {
-  const width = state.width.use()
-  const radius = state.radius.use()
-  const height = radius * 3 * children.length
-  const direction = state.direction.use()
-  const selected = state.selected.use()
+  const width = state.width.get()
+  const radius = state.radius.get()
+
+  const direction = state.direction.get()
+  const selected = state.selected.get()
   const spring = useSpringValue(selected)
   spring.start(selected)
 
   const color = ["hsl(45, 100%, 30%)", "hsl(180, 100%, 30%)", "hsl(300, 100%, 30%)", "hsl(300, 100%, 20%)"][selected]
+  const height = radius * 3 * children.length
 
   return (
     <>
       {direction === "horizontal" ? (
         <animated.group position={spring.to((value) => [(width / children.length) * value - width / 2 + width / children.length / 2, 0, radius * 4])}>
-          <Button width={width / children.length} radius={radius} color={color} />
+          <Button width={width / children.length - radius * 2} radius={radius} color={color} />
         </animated.group>
       ) : (
         <animated.group position={spring.to((value) => [0, -(height / children.length) * value + height / 2 - height / children.length / 2, radius * 4])}>
-          <Button width={width} radius={radius} color={state.color.use()} />
+          <Button width={width} radius={radius} color={state.color.get()} />
         </animated.group>
       )}
     </>
@@ -114,9 +89,10 @@ function Selected({ state, children }) {
 }
 
 function Buttons({ state, names, children }) {
-  const horizontal = state.direction.use() === "horizontal"
-  const width = state.width.use()
-  const radius = state.radius.use()
+  const width = state.width.get()
+  const radius = state.radius.get()
+  const horizontal = state.direction.get() === "horizontal"
+
   const height = radius * 3 * children.length
 
   return (
@@ -136,22 +112,28 @@ function Buttons({ state, names, children }) {
 }
 
 function TransparentButton({ state, index, children, width, radius, horizontal }) {
-  const [hovered, setHover] = useState(false)
+  const hovered = useObservable(false)
   useCursor(hovered)
 
   return (
     <Suspense>
       <mesh
-        onPointerOver={() => setHover(true)}
-        onPointerOut={() => setHover(false)}
-        onClick={() => state.selected.set(index)}
+        onPointerOver={() => hovered.set(true)}
+        onPointerOut={() => hovered.set(false)}
+        onClick={() => (
+          state.animating.set(true),
+          state.selected.set((prev) => {
+            state.previous.set(prev)
+            return index
+          })
+        )}
         rotation-z={90 * (Math.PI / 180)}
         position-z={radius}
       >
-        <capsuleGeometry args={[radius, horizontal ? width / children.length - radius * 2 : width - radius * 2]} />
+        <capsuleGeometry args={[radius, horizontal ? width / children.length - radius * 2 : width]} />
         <meshStandardMaterial
           transparent={true}
-          opacity={hovered ? 0.25 : 0}
+          opacity={hovered.get() ? 0.25 : 0}
           metalness={1}
           roughness={1}
           color={horizontal ? ["hsl(45, 100%, 20%)", "hsl(180, 100%, 20%)", "hsl(300, 100%, 20%)", "hsl(200, 100%, 20%)"][index] : "hsl(44, 100%, 20%)"}

@@ -1,6 +1,8 @@
-import { useState } from "react"
+import { useObservable } from "@legendapp/state/react"
+import { useThree } from "@react-three/fiber"
 import { animated, useSpringValue } from "@react-spring/three"
-import { RoundedBox } from "@react-three/drei"
+
+import Button from "../components/Button"
 
 function MinMax(num, min, max) {
   if (num < min) return min
@@ -8,40 +10,40 @@ function MinMax(num, min, max) {
   return num
 }
 
-export default function Grid({ position, height, width, xspacing, columns, data, speed, visibleItems, children }) {
-  const yspacing = (height - 100) / visibleItems
-  const [scroll, setScroll] = useState(0)
-  const spring = useSpringValue(0)
-  spring.start(scroll)
+export default function Grid({ position, height, width, xspacing, columns, items, speed, visibleItems, children }) {
+  const scroll = useObservable(0)
+  const events = useThree((state) => state.events)
+  const spring = useSpringValue(0, { onChange: () => events.update() })
+  spring.start(scroll.get())
+
+  const yspacing = (height - 75) / (visibleItems - 1)
 
   return (
     <group position={position}>
-      <Box setScroll={setScroll} width={width} height={height} />
-      {[...Array(visibleItems * columns + 2 * columns)].map((_, i) => (
-        <Item
-          key={i}
-          i={i}
-          data={data}
-          width={width}
-          height={height - 100}
-          xspacing={xspacing}
-          columns={columns}
-          spring={spring}
-          yspacing={yspacing}
-          speed={speed}
-          visibleItems={visibleItems}
-          children={children}
-        />
-      ))}
+      <Button
+        width={width}
+        height={height}
+        radius={10}
+        color={"hsl(0, 0%, 16%)"}
+        onWheel={(ev) => scroll.set((prev) => MinMax(prev + Math.sign(ev.deltaY), 0, (yspacing / speed) * Math.max(items - visibleItems, 0)))}
+      />
+      {items &&
+        [...Array(Math.min((visibleItems - 1) * columns + 2 * columns, items))].map((_, i) => (
+          <Item
+            key={i}
+            i={i}
+            width={width}
+            height={height - 75}
+            xspacing={xspacing}
+            columns={columns}
+            spring={spring}
+            yspacing={yspacing}
+            speed={speed}
+            visibleItems={visibleItems - 1}
+            children={children}
+          />
+        ))}
     </group>
-  )
-}
-
-function Box({ setScroll, height, width }) {
-  return (
-    <RoundedBox onWheel={(ev) => setScroll((prev) => Math.max(prev + Math.sign(ev.deltaY), 0))} args={[width, height, 40]} radius={10}>
-      <meshPhysicalMaterial color={"hsl(0, 0%, 10%)"} roughness={1} metalness={0.8} />
-    </RoundedBox>
   )
 }
 
