@@ -13,10 +13,10 @@ function MinMax(num, min, max) {
 export default function Grid({ position, height, width, xspacing, columns, items, speed, visibleItems, children }) {
   const scroll = useObservable(0)
   const events = useThree((state) => state.events)
-  const spring = useSpringValue(0, { onChange: () => events.update() })
+  const spring = useSpringValue(scroll.get(), { onChange: () => events.update() })
   spring.start(scroll.get())
 
-  const yspacing = (height - 75) / (visibleItems - 1)
+  const yspacing = (height - 125) / (visibleItems - 1)
 
   return (
     <group position={position}>
@@ -33,7 +33,7 @@ export default function Grid({ position, height, width, xspacing, columns, items
             key={i}
             i={i}
             width={width}
-            height={height - 75}
+            height={height - 125}
             xspacing={xspacing}
             columns={columns}
             spring={spring}

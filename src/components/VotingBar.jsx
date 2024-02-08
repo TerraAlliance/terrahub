@@ -1,91 +1,60 @@
-import { useEffect } from "react"
-import CustomShaderMaterial from "three-custom-shader-material/vanilla"
-import { Vector3, MeshStandardMaterial } from "three"
+import { useEffect, useContext, Suspense } from "react"
+import { useLcdClient, useConnectedWallet } from "@terra-money/wallet-kit"
+import { app, getChainID, context } from "../global"
+import { Text } from "../components/Text"
 
-import { station } from "../../../state"
+export default function VotingBar({ position, proposal, length, radius, quorum, width, status }) {
+  const models = useContext(context)
+  const pool = app.pool.get()
+  const tally = app[proposal?.id].tally.get()
 
-export default function VotingBar({ position, proposal, length, radius, quorum }) {
-  const lcd = station.lcd.get()
-  const staked = station.data.stake.total.get()
-  const chainID = station.chainID.get()
-  const tally = station.data.govern[proposal?.id].tally.get()
-
+  const connected = useConnectedWallet()
+  const lcd = useLcdClient()
   useEffect(() => {
-    proposal && lcd.gov.tally(proposal?.id, chainID).then((tally) => station.data.govern[proposal.id].tally.set(tally))
-  }, [])
+    lcd.gov.tally(proposal?.id, getChainID(connected?.network) || "phoenix-1").then((tally) =>
+      app[proposal.id].tally.set({
+        yes: tally.yes.toNumber() / 1000000,
+        no: tally.no.toNumber() / 1000000,
+        no_with_veto: tally.no_with_veto.toNumber() / 1000000,
+        abstain: tally.abstain.toNumber() / 1000000,
+      })
+    )
+    lcd.staking.pool(getChainID(connected?.network) || "phoenix-1").then((total) => {
+      app.pool.set({ bonded_tokens: total.bonded_tokens.amount.toNumber() / 1000000, not_bonded_tokens: total.not_bonded_tokens.amount.toNumber() / 1000000 })
+    })
+  }, [connected, proposal])
 
-  const yeslength = (tally?.yes.toString() / staked) * length
-  const nolength = (tally?.no.toString() / staked) * length
-  const vetolength = (tally?.no_with_veto.toString() / staked) * length
-  const abstainlength = (tally?.abstain.toString() / staked) * length
-  const voteslength = yeslength + nolength + vetolength + abstainlength
+  console.log(tally?.yes)
 
-  var trackMaterial = new CustomShaderMaterial({
-    baseMaterial: new MeshStandardMaterial({ metalness: 1, roughness: 0.15 }),
-    uniforms: {
-      bboxMin: {
-        value: new Vector3(0, (yeslength + nolength + vetolength + abstainlength) / 2, 0),
-      },
-      bboxMax: {
-        value: new Vector3(0, -(yeslength + nolength + vetolength + abstainlength) / 2, 0),
-      },
-      yesPercentage: { value: yeslength / voteslength },
-      noPercentage: { value: nolength / voteslength },
-      vetoPercentage: { value: vetolength / voteslength },
-      abstainPercentage: { value: abstainlength / voteslength },
-    },
-    vertexShader: `
-    uniform vec3 bboxMin;
-    uniform vec3 bboxMax;
-  
-    varying vec2 vUv;
+  const yes = (tally?.yes / pool?.bonded_tokens) * length
+  const no = (tally?.no / pool?.bonded_tokens) * length
+  const veto = (tally?.no_with_veto / pool?.bonded_tokens) * length
+  const abstain = (tally?.abstain / pool?.bonded_tokens) * length
 
-    void main() {
-      vUv.y = (position.y - bboxMin.y) / (bboxMax.y - bboxMin.y);
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
-    }
-  `,
-    fragmentShader: `
-    varying vec2 vUv;
-
-    uniform float yesPercentage;
-    uniform float noPercentage;
-    uniform float vetoPercentage;
-    uniform float abstainPercentage;
-
-    void main() {
-      vec3 color = vec3(0.0);
-    if (vUv.y < yesPercentage) {
-        color = vec3(0.0, 1.0, 0.0);  // Green (RGB)
-    } else if (vUv.y < (yesPercentage + noPercentage)) {
-        color = vec3(1.0, 0.0, 0.0);  // Red (RGB)
-    } else if (vUv.y < (yesPercentage + noPercentage + vetoPercentage)) {
-        color = vec3(1.0, 0.5, 0.0);  // Orange (RGB)
-    } else if (vUv.y < (yesPercentage + noPercentage + vetoPercentage + abstainPercentage)) {
-        color = vec3(1.0, 1.0, 0.0);  // Yellow (RGB)
-    }
-    csm_DiffuseColor = vec4(color, 1.0);
-    }
-  `,
-    silent: true,
-    transparent: true,
-  })
+  const reachedQuorum = yes + no + veto + abstain > quorum * length
+  const thresholdPosition = reachedQuorum ? (yes + no + veto) / 2 : quorum * length
 
   return (
-    <group position={position}>
-      <mesh position={[0, 0, 0]} rotation={[0, 0, 90 * (Math.PI / 180)]}>
-        <capsuleGeometry args={[radius, length - radius * 2]} />
-        <meshStandardMaterial transparent={true} opacity={0.3} color={"white"} depthWrite={false} />
-      </mesh>
-      <mesh position={[-length / 2 + length * quorum, radius * 2.5, 0]} rotation={[0, 0, Math.PI]} scale={5}>
-        <meshStandardMaterial color={0xfcba03} roughness={0.3} metalness={1} />
-        <coneGeometry args={[1, 3]} />
-      </mesh>
-      {tally && (
-        <mesh material={trackMaterial} position={[(-length + yeslength + nolength + vetolength + abstainlength) / 2, 0, 0]} rotation={[0, 0, 90 * (Math.PI / 180)]}>
-          <capsuleGeometry args={[radius, yeslength + nolength + vetolength + abstainlength - radius * 2]} />
-        </mesh>
+    <Suspense>
+      {status === "voting" && (
+        <Text
+          text={reachedQuorum && yes > no + veto ? "passing" : "not passing"}
+          position={[width / 2 - 100, 0, 25]}
+          color={reachedQuorum && yes > no + veto ? "green" : "red"}
+          fontSize={22}
+        />
       )}
-    </group>
+      <group position={position}>
+        <mesh position={[thresholdPosition - length / 2, radius * 2.5, 0]} rotation={[0, 0, Math.PI]} scale={5}>
+          <meshStandardMaterial color={0xfcba03} roughness={0.3} metalness={1} />
+          <coneGeometry args={[0.8, 1.5]} />
+        </mesh>
+        <models.VeryMetalCylinder position={[0, 0, -radius * 2]} scale={[radius, length - radius * 2, radius]} rotation-z={Math.PI / 2} color={"hsl(0, 0%, 40%)"} />
+        <models.VeryMetalCylinder position={[-(length - yes) / 2, 0, 0]} scale={[radius, yes, radius]} rotation-z={Math.PI / 2} color={"green"} />
+        <models.VeryMetalCylinder position={[-(length - no) / 2 + yes, 0, 0]} scale={[radius, no, radius]} rotation-z={Math.PI / 2} color={"red"} />
+        <models.VeryMetalCylinder position={[-(length - veto) / 2 + yes + no, 0, 0]} scale={[radius, veto, radius]} rotation-z={Math.PI / 2} color={"orange"} />
+        <models.VeryMetalCylinder position={[-(length - abstain) / 2 + yes + no + veto, 0, 0]} scale={[radius, abstain, radius]} rotation-z={Math.PI / 2} color={"blue"} />
+      </group>
+    </Suspense>
   )
 }
